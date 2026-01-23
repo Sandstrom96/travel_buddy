@@ -1,0 +1,11 @@
+
+  # Optional: Add database service later (PostgreSQL, etc.)
+  # db:
+  #   image: postgres:15
+  #   environment:
+  #     - POSTGRES_DB=travel_buddy
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+
+# volumes:
+#   postgres_data:
