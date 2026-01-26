@@ -55,6 +55,7 @@ Använd detta om du vill utveckla koden och se dina ändringar direkt utan att b
 uv sync
 ```
 
+
 ### 3) Starta backend (FastAPI)
 Alternativ A (om ni kör ett python-entrypoint-script):
 ```bash
