@@ -35,7 +35,7 @@ Valfritt (rekommenderas):
 ### 1) Klona repo
 ```bash
 git clone https://github.com/Sandstrom96/travel_buddy.git
-cd travel_buddy
+cd src/travel_buddy
 ```
 
 ### 2) Installera dependencies
@@ -61,7 +61,7 @@ curl http://localhost:8000/health
 
 ### 4) Starta frontend (Streamlit)
 ```bash
-uv run streamlit run app.py
+uv run streamlit run frontend/app.py
 ```
 
 ## Vanliga dev-kommandon
