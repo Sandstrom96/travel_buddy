@@ -1,0 +1,53 @@
+{
+"_comment": "MOCK DATA FOR MVP - Replace with real data from SerpAPI/database later",
+"attractions": [
+{
+    "id": "sensoji",
+    "name": "Sensoji Temple",
+    "destination": "tokyo",
+    "category": "temple",
+    "description": "Historic Buddhist temple built in 645 AD",
+    "cultural_notes": "Remove shoes, bow respectfully, avoid photos in inner sanctum",
+    "best_time": "early morning",
+    "crowd_level": "high",
+    "entrance_fee": "free",
+    "hours": "6:00-17:00"
+},
+{
+    "id": "tsukiji",
+    "name": "Tsukiji Outer Market",
+    "destination": "tokyo",
+    "category": "food",
+    "description": "Famous fish market with street food and sushi vendors",
+    "cultural_notes": "Respect working vendors, don't touch fish, queue properly",
+    "best_time": "morning (6-10 AM)",
+    "crowd_level": "high",
+    "entrance_fee": "free",
+    "hours": "5:00-14:00"
+},
+{
+    "id": "fushimi_inari",
+    "name": "Fushimi Inari Shrine",
+    "destination": "kyoto",
+    "category": "temple",
+    "description": "Iconic shrine with thousands of red torii gates on hillside",
+    "cultural_notes": "Best visited early morning to avoid crowds, donation appreciated",
+    "best_time": "sunrise (6-7 AM)",
+    "crowd_level": "low (early), high (afternoon)",
+    "entrance_fee": "free",
+    "hours": "open 24/7"
+},
+{
+    "id": "gion_corner",
+    "name": "Gion Corner",
+    "destination": "kyoto",
+    "category": "cultural",
+    "description": "Traditional geisha performance and cultural experiences",
+    "cultural_notes": "Photography often restricted during performances, arrive early",
+    "best_time": "evening",
+    "crowd_level": "medium",
+    "entrance_fee": "$15-25",
+    "hours": "18:00-20:00"
+}
+]
+}
