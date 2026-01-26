@@ -1,0 +1,51 @@
+[2026-01-23] Setup GitHub Projects (Kanban) + labels + kolumner
+[2026-01-23] Skapa docs/way-of-working.md (PR-regler + DoD)
+[2026-01-23] Backend: FastAPI skeleton + GET /health
+[2026-01-23] Frontend: Streamlit skeleton (app.py + pages/home.py)
+[2026-01-23] Frontend: api_client + visa backend-status (/health) i UI
+[2026-01-23] README: Getting started (lokalt)
+[2026-01-26] Backend: GET /destinations?q= (mock/seed)
+[2026-01-26] Backend: GET /destinations/{id}/guide (mock/seed)
+[2026-01-26] Backend: Pydantic schemas för destination + guide
+[2026-01-26] Frontend: destinationsök kopplad till backend
+[2026-01-26] Frontend: guidevy renderar minst 3 sektioner
+[2026-01-26] PR-review-rutin: minst 2 PRs merged med review
+[2026-01-27] UI: loading/error states (minimalt) för sök + guide
+[2026-01-27] Backend: felhantering (404/500) + enkel loggning
+[2026-01-27] Skapa RAG-backlog: 8–12 issues (flytta till Ready)
+[2026-01-28] Docker: backend.Dockerfile + docker-compose skeleton
+[2026-01-28] Docker: frontend (valfritt) eller instruktion för lokal start
+[2026-01-28] Tests: test_health + (valfritt) test_guide
+[2026-01-28] UI: GuideSection-komponent + “Sources”-visning (mock OK)
+[2026-01-28] README: How to run (docker/local) uppdatering
+[2026-01-29] Refactor: rensa duplicerad kod (DRY) i backend/services
+[2026-01-29] Refactor: rensa duplicerad kod i frontend api_client/components
+[2026-01-29] Skapa data-mappar + seed-filer (data/raw, data/processed, data/seeds)
+[2026-01-30] MVP: end-to-end demo stabil (sök → guide)
+[2026-01-30] README: screenshots + tydliga kommandon
+[2026-01-30] docs/architecture.md (MVP-version)
+[2026-01-30] Lås MOFA-källa (URL) + skapa ingestion/RAG issues i Ready
+[2026-02-02] Scrape: hämta MOFA VISA HTML → spara data/raw/mofa_visa.html
+[2026-02-02] Parse/Clean: extrahera main text → data/processed/mofa_visa.txt
+[2026-02-02] Chunking: dela text i chunks + metadata (destination/category/url/retrieved_at)
+[2026-02-02] Embeddings: lokalt embeddings-flöde för chunks (gratis)
+[2026-02-02] LanceDB: skapa/open DB i data/lancedb + upsert chunks
+[2026-02-02] LanceDB: query top-k med filter (Japan + entry_requirements)
+[2026-02-02] Backend: POST /rag/query (answer + citations)
+[2026-02-02] Frontend: agent_chat sida (fråga → svar + källor)
+[2026-02-03] RAG: felhantering (tom DB, fetch fail, parsing fail)
+[2026-02-03] docs/architecture.md uppdateras med RAG-flöde
+[2026-02-03] Feature freeze: flytta återstående nice-to-haves till “Stretch”
+[2026-02-04] PowerPoint: slides v1 (problem → lösning → arkitektur → demo → resultat)
+[2026-02-04] Demo-manus: vem säger vad + ordning
+[2026-02-04] Demo-rep #1 (tidsatt 10–15 min)
+[2026-02-04] Demo-rep #2 (inkl plan B)
+[2026-02-04] README: final polish + screenshots
+[2026-02-05] PowerPoint: final + export + backup
+[2026-02-05] Demo-rep #3 (kort, sista check)
+[2026-02-05] Showstopper-bugfix only
+[2026-02-05] Individuell reflektion: Person A (klar)
+[2026-02-05] Individuell reflektion: Person B (klar)
+[2026-02-05] Individuell reflektion: Person C (klar)
+[2026-02-06] Presentation: PowerPoint + live demo
+[2026-02-06] Kort repo/kanban-showcase (PRs + Project board)
