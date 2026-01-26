@@ -35,10 +35,22 @@ Valfritt (rekommenderas):
 ### 1) Klona repo
 ```bash
 git clone https://github.com/Sandstrom96/travel_buddy.git
-cd src/travel_buddy
 ```
 
-### 2) Installera dependencies
+### Alternativ A: Starta med Docker (Enklast)
+Om du har Docker installerat kan du starta hela stacken (backend och frontend) med ett enda kommando. Detta är det rekommenderade sättet för att snabbt verifiera att allt fungerar.
+
+```bash
+docker compose up --build
+```
+När containrarna har startat når du tjänsterna här:
+- **Backend (API):** [http://localhost:8000](http://localhost:8000)
+- **Frontend (UI):** [http://localhost:8501](http://localhost:8501)
+- **Health Check:** [http://localhost:8000/health](http://localhost:8000/health)
+
+
+### Alternativ B: Starta manuellt med `uv` (För utveckling)
+Använd detta om du vill utveckla koden och se dina ändringar direkt utan att bygga om containrar.
 ```bash
 uv sync
 ```
@@ -51,7 +63,7 @@ uv run python app/run.py
 
 Alternativ B (om ni kör uvicorn direkt):
 ```bash
-uv run uvicorn app.main:app --reload --port 8000
+uv run uvicorn travel_buddy.api.main:app --reload --port 8000
 ```
 
 Testa backend:
@@ -61,7 +73,7 @@ curl http://localhost:8000/health
 
 ### 4) Starta frontend (Streamlit)
 ```bash
-uv run streamlit run frontend/app.py
+uv run streamlit run frontend/pages/home.py
 ```
 
 ## Vanliga dev-kommandon
