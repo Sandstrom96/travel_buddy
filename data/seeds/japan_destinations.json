@@ -1,0 +1,41 @@
+{
+"_comment": "MOCK DATA FOR MVP - Replace with real data from SerpAPI/database later",
+"destinations": [
+{
+    "id": "tokyo",
+    "name": "Tokyo",
+    "country": "Japan",
+    "region": "Kanto",
+    "description": "Japan's capital - a blend of ultramodern and traditional",
+    "days_recommended": 4,
+    "best_months": [3, 4, 9, 10],
+    "entry_requirements": "Visa-free for 90 days (most nationalities)",
+    "safety_level": "Very Safe",
+    "crowds": "high"
+},
+{
+    "id": "kyoto",
+    "name": "Kyoto",
+    "country": "Japan",
+    "region": "Kansai",
+    "description": "Ancient capital with thousands of temples and traditional culture",
+    "days_recommended": 3,
+    "best_months": [3, 4, 10, 11],
+    "entry_requirements": "Visa-free for 90 days",
+    "safety_level": "Very Safe",
+    "crowds": "very high"
+},
+{
+    "id": "osaka",
+    "name": "Osaka",
+    "country": "Japan",
+    "region": "Kansai",
+    "description": "Vibrant city known for street food and nightlife",
+    "days_recommended": 2,
+    "best_months": [3, 4, 9, 10],
+    "entry_requirements": "Visa-free for 90 days",
+    "safety_level": "Very Safe",
+    "crowds": "medium"
+}
+]
+}

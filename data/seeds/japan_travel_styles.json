@@ -1,0 +1,23 @@
+{
+"_comment": "MOCK DATA FOR MVP - Replace with real data from SerpAPI/database later",
+"travel_styles": {
+"budget_levels": [
+    {"id": "backpacker", "name": "Backpacker", "daily_budget": "$30-50", "accommodation": "hostels, capsules"},
+    {"id": "budget", "name": "Budget Traveler", "daily_budget": "$50-100", "accommodation": "budget hotels, airbnb"},
+    {"id": "comfort", "name": "Comfort Seeker", "daily_budget": "$100-200", "accommodation": "3-4 star hotels"},
+    {"id": "luxury", "name": "Luxury Traveler", "daily_budget": "$200+", "accommodation": "5 star hotels, ryokans"}
+],
+"pace_types": [
+    {"id": "relaxed", "activities_per_day": 1, "description": "Slow, absorb culture deeply"},
+    {"id": "moderate", "activities_per_day": 2, "description": "Balance sightseeing with rest"},
+    {"id": "fast", "activities_per_day": 4, "description": "See as much as possible"}
+],
+"interests": [
+    {"id": "culture", "name": "Culture & History", "keywords": ["temples", "museums", "traditional"]},
+    {"id": "food", "name": "Food & Cuisine", "keywords": ["street food", "restaurants", "markets"]},
+    {"id": "nature", "name": "Nature & Hiking", "keywords": ["mountains", "parks", "gardens"]},
+    {"id": "urban", "name": "Urban & Shopping", "keywords": ["shopping", "nightlife", "modern"]},
+    {"id": "spiritual", "name": "Spiritual", "keywords": ["meditation", "temples", "shrines"]}
+]
+}
+}

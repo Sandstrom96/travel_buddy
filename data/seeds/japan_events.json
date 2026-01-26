@@ -1,0 +1,41 @@
+{
+"_comment": "MOCK DATA FOR MVP - Replace with real data from SerpAPI/database later",
+"events": [
+{
+    "id": "cherry_blossom_2026",
+    "name": "Cherry Blossom Festival (Sakura)",
+    "destination": ["tokyo", "kyoto"],
+    "season": "spring",
+    "months": [3, 4],
+    "duration": "2-3 weeks",
+    "description": "Iconic cherry blossoms with hanami parties and night illuminations",
+    "cultural_notes": "Peak bloom varies yearly, plan 1-2 weeks in advance, hanami parties are social gatherings",
+    "crowdedness": "very high",
+    "what_to_know": "Bring picnic items, arrive early for good spots, night viewing is magical"
+},
+{
+    "id": "gion_matsuri",
+    "name": "Gion Festival",
+    "destination": ["kyoto"],
+    "season": "summer",
+    "months": [7],
+    "duration": "full month",
+    "description": "Traditional festival with elaborate floats and processions",
+    "cultural_notes": "Wear yukata (traditional dress), respect sacred rituals",
+    "crowdedness": "very high",
+    "what_to_know": "Main parade July 17th, book accommodation early, streets close to traffic"
+},
+{
+    "id": "autumn_foliage",
+    "name": "Autumn Foliage (Momiji)",
+    "destination": ["tokyo", "kyoto"],
+    "season": "autumn",
+    "months": [10, 11],
+    "duration": "4-6 weeks",
+    "description": "Stunning red maple leaves, temples lit up at night",
+    "cultural_notes": "Peak timing varies, temples often offer special night illuminations",
+    "crowdedness": "high",
+    "what_to_know": "Peak dates shift yearly, book popular temples in advance"
+}
+]
+}
