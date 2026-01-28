@@ -5,11 +5,14 @@ Stack: FastAPI (backend) + Streamlit (frontend).
 
 ## Repo-struktur
 
-- `README.md`  
-  Översikt och hur man kör projektet lokalt.
+- `backend/`
+  FastAPI-server, agenter, endpoints och databaslogik.
+
+- `frontend/`
+  Stramlit gränssnitt och API-klient.
 
 - `docs/`  
-  SSoT och dokumentation (t.ex. arbetssätt, arkitektur, backlog-plan).
+  SSoT och dokumentation (t.ex. arbetssätt).
 
 - `data/`  
   Datafiler och artifacts för ingestion/RAG.
@@ -21,6 +24,11 @@ Stack: FastAPI (backend) + Streamlit (frontend).
   Hjälpscripts för GitHub-automation och dev-flöden.
   - `scripts/.env.example` – exempel på config för scripts
   - `scripts/github/` – GitHub CLI scripts + docs
+
+- `pyproject.toml`
+  Central konfig och beroenden för hela projektett.
+
+
 
 ## Förutsättningar
 
@@ -56,15 +64,15 @@ uv sync
 ```
 
 
-### 3) Starta backend (FastAPI)
+### 2) Starta backend (FastAPI)
 Alternativ A (om ni kör ett python-entrypoint-script):
 ```bash
-uv run python app/run.py
+uv run python backend/main.py
 ```
 
 Alternativ B (om ni kör uvicorn direkt):
 ```bash
-uv run uvicorn travel_buddy.api.main:app --reload --port 8000
+uv run uvicorn travel_backend.main:app --reload --port 8000
 ```
 
 Testa backend:
@@ -72,12 +80,17 @@ Testa backend:
 curl http://localhost:8000/health
 ```
 
-### 4) Starta frontend (Streamlit)
+### 3) Starta frontend (Streamlit)
 ```bash
-uv run streamlit run frontend/pages/home.py
+uv run streamlit run frontend/app.py
 ```
 
 ## Vanliga dev-kommandon
+
+### Lägg till nya bibliotek/paket
+```bash
+uv add [paketnamn]
+```
 
 ### Uppdatera lockfile (om ni ändrat pyproject)
 ```bash

@@ -1,7 +1,7 @@
 """ Main module for Travel Buddy API. Connects all endpoints and starts the server."""
 
 from fastapi import FastAPI
-from travel_buddy.api.endpoints import (
+from endpoints import (
     health,
     destinations,
     agent,
