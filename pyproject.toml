@@ -12,4 +12,6 @@ dependencies = [
     "streamlit>=1.40.0",
     "uvicorn",
     "lancedb",
+    "setuptools>=80.10.2",
+    "ipykernel>=7.1.0",
 ]
