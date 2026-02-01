@@ -1,11 +1,12 @@
 from pydantic import Field
 from lancedb.embeddings import get_registry
 from lancedb.pydantic import LanceModel, Vector
-from dotenv import load_dotenv
 
-load_dotenv()
-
-embedding_model = get_registry().get("gemini-text").create(name="gemini-embedding-001")
+embedding_model = (
+    get_registry()
+    .get("sentence-transformers")
+    .create(name="BAAI/bge-small-en-v1.5", device="cpu")
+)
 
 
 class Country(LanceModel):
@@ -18,4 +19,4 @@ class Country(LanceModel):
         description="Content category (destination, practical_guide, spot, news, general)"
     )
     text: str = embedding_model.SourceField()
-    embedding: Vector(3072) = embedding_model.VectorField()
+    embedding: Vector(embedding_model.ndims()) = embedding_model.VectorField()
