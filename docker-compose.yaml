@@ -17,10 +17,17 @@ services:
       dockerfile: docker/backend.Dockerfile
     ports:
       - "8000:8000"
+    volumes:
+      - .:/app # Gemini till nedan.
+    environment:
+      - WATCHFILES_FORCE_POLLING=True # Gemini hjälpte till med detta! Detta gör så att den känner av ändringar i koden och startar om servern automatiskt när man kör i Docker på Windows.
   frontend:
     build:
       context: .
       dockerfile: docker/frontend.Dockerfile
+    command: ["streamlit", "run", "frontend/app.py", "--server.port=8501", "--server.address=0.0.0.0"]
     ports:
       - "8501:8501"
+    volumes:
+      - .:/app # -||-
 

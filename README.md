@@ -49,44 +49,48 @@ När containrarna har startat når du tjänsterna här:
 - **Health Check:** [http://localhost:8000/health](http://localhost:8000/health)
 
 
-### Alternativ B: Starta manuellt med `uv` (För utveckling)
-Använd detta om du vill utveckla koden och se dina ändringar direkt utan att bygga om containrar.
+### Alternativ B: Starta manuellt lokalt (utan Docker)
+Om du inte vill använda Docker måste du installera miljön lokalt på din dator.
+
+### 1) Installera dependencies (VIKTIGT!):
+Eftersom vi delat upp projektet i fronten/backend måste du köra detta kommando istället för ett vanligt "uv sync"
 ```bash
-uv sync
+uv sync --all-extras
 ```
 
-
-### 3) Starta backend (FastAPI)
-Alternativ A (om ni kör ett python-entrypoint-script):
-```bash
-uv run python app/run.py
-```
-
-Alternativ B (om ni kör uvicorn direkt):
+### 2) Starta backend:
 ```bash
 uv run uvicorn travel_buddy.api.main:app --reload --port 8000
 ```
 
-Testa backend:
+### 3) Testa backend:
 ```bash
 curl http://localhost:8000/health
 ```
 
-### 4) Starta frontend (Streamlit)
+### 4) Starta frontend (Streamlit):
 ```bash
-uv run streamlit run frontend/pages/home.py
+uv run streamlit run frontend/app.py
 ```
+*OBS: Vi kör app.py och inte home.py flr att få med navigationsmenyn*
+
+
 
 ## Vanliga dev-kommandon
+
+### Lägga till nytt bibliotek i uv
+```bash
+uv add 
+```
 
 ### Uppdatera lockfile (om ni ändrat pyproject)
 ```bash
 uv lock
 ```
 
-### Installera/synka igen (om någon får strul)
+### Installera/synka igen. O något strular eller om du hämtar ny kod från git, kör:
 ```bash
-uv sync
+uv sync --all-extras
 ```
 
 ## Troubleshooting
