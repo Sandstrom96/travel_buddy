@@ -47,7 +47,7 @@ def ingest_db():
         # Samla all data för detta land i en lista
         dfs = []
         for f in file_list:
-            print(f"   Läser in: {f.name}")
+            print(f"Läser in: {f.name}")
             df = pd.read_json(f, lines=True)
             dfs.append(df)
 
@@ -55,33 +55,11 @@ def ingest_db():
             # Slå ihop till en stor DataFrame
             full_df = pd.concat(dfs, ignore_index=True)
 
-            # Populera tabellen med data i batches
-            try:
-                table = db.open_table(country)
-                batch_size = 20
-                total_rows = len(full_df)
+            table = db.open_table(country)
+            print(f"Lägger till {len(full_df)} rader...")
+            table.add(full_df)
 
-                for i in range(0, total_rows, batch_size):
-                    batch_df = full_df.iloc[i : i + batch_size]
-                    table.add(batch_df)
-
-                    current_batch = (i // batch_size) + 1
-                    total_batches = (total_rows + batch_size - 1) // batch_size
-                    print(
-                        f"   Batch {current_batch}/{total_batches} tillagd ({len(batch_df)} rader)"
-                    )
-
-                    # Vänta mellan batches (utom efter den sista)
-                    if i + batch_size < total_rows:
-                        time.sleep(
-                            60
-                        )  # 1 minut mellan batches för att inte slå i gemini rate limit
-
-                print(
-                    f"   ✅ Klar! Tabell '{country}' uppdaterad med {total_rows} rader."
-                )
-            except Exception as e:
-                print(f"   ❌ Fel vid inmatning av data: {e}")
+            print(f"Klar! Tabell '{country}' uppdaterad med {len(full_df)} rader.")
 
 
 if __name__ == "__main__":
