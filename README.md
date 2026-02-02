@@ -55,12 +55,15 @@ Om du inte vill använda Docker måste du installera miljön lokalt på din dato
 ### 1) Installera dependencies (VIKTIGT!):
 Eftersom vi delat upp projektet i fronten/backend måste du köra detta kommando istället för ett vanligt "uv sync"
 ```bash
+cd src/travel_buddy
+uv run main.py
 uv sync --all-extras
 ```
 
 ### 2) Starta backend:
 ```bash
-uv run uvicorn travel_buddy.api.main:app --reload --port 8000
+cd src/travel_buddy
+uv run uvicorn main:app --reload --port 8000
 ```
 
 ### 3) Testa backend:
@@ -70,6 +73,7 @@ curl http://localhost:8000/health
 
 ### 4) Starta frontend (Streamlit):
 ```bash
+uv run streamlit run frontend/app.py
 uv run streamlit run frontend/app.py
 ```
 *OBS: Vi kör app.py och inte home.py flr att få med navigationsmenyn*

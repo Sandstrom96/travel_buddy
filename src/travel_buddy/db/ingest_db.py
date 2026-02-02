@@ -1,8 +1,8 @@
 import lancedb
 import pandas as pd
-import time
 from pathlib import Path
-from models import Country
+from travel_buddy.db.models import Country
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 BASE_DIR = Path(__file__).parents[3]
 PROCESSED_DATA_DIR = BASE_DIR / "data" / "processed"
@@ -24,8 +24,12 @@ def ingest_db():
         print("Inga filer hittades i data/processed")
         return
 
-    country_files = {}
+    # Konfigurera text splitter
+    splitter = RecursiveCharacterTextSplitter(
+        chunk_size=1000, chunk_overlap=200, separators=["\n\n", "\n", ".  ", " ", ""]
+    )
 
+    country_files = {}
     for file_path in files:
         filename = file_path.name
         if "_" in filename:
@@ -43,45 +47,45 @@ def ingest_db():
 
         # Sätt upp databasen och skapa tabell med rätt schema
         db = setup_db(DB_PATH, country)
+        table = db.open_table(country)
 
-        # Samla all data för detta land i en lista
-        dfs = []
+        total_chunks = 0
+
         for f in file_list:
-            print(f"   Läser in: {f.name}")
+            print(f"Bearbetar: {f.name}")
             df = pd.read_json(f, lines=True)
-            dfs.append(df)
 
-        if dfs:
-            # Slå ihop till en stor DataFrame
-            full_df = pd.concat(dfs, ignore_index=True)
+            # Lista för att hålla alla chunks för filen
+            chunked_records = []
 
-            # Populera tabellen med data i batches
-            try:
-                table = db.open_table(country)
-                batch_size = 20
-                total_rows = len(full_df)
+            # Loopa igenom varje rad och skapa chunks
+            for _, row in df.iterrows():
+                oringinal_text = row.get("text", "")
 
-                for i in range(0, total_rows, batch_size):
-                    batch_df = full_df.iloc[i : i + batch_size]
-                    table.add(batch_df)
+                if not oringinal_text:
+                    continue
 
-                    current_batch = (i // batch_size) + 1
-                    total_batches = (total_rows + batch_size - 1) // batch_size
-                    print(
-                        f"   Batch {current_batch}/{total_batches} tillagd ({len(batch_df)} rader)"
-                    )
+                chunks = splitter.split_text(oringinal_text)
 
-                    # Vänta mellan batches (utom efter den sista)
-                    if i + batch_size < total_rows:
-                        time.sleep(
-                            60
-                        )  # 1 minut mellan batches för att inte slå i gemini rate limit
+                # För varje chunk, skapa ett nytt objekt att lägga till i databasen
+                for index, chunk_text in enumerate(chunks):
+                    record = {
+                        "filename": row.get("filename", f.name),
+                        "country": row.get("country", country),
+                        "region": row.get("region", ""),
+                        "url": row.get("url", ""),
+                        "title": row.get("title", ""),
+                        "category": row.get("category", ""),
+                        "text": chunk_text,
+                        "chunk_index": index,
+                    }
+                    chunked_records.append(record)
+            if chunked_records:
+                table.add(chunked_records)
+                total_chunks += len(chunked_records)
+                print(f"Skapade {len(chunked_records)} chunks från filen {f.name}.")
 
-                print(
-                    f"   ✅ Klar! Tabell '{country}' uppdaterad med {total_rows} rader."
-                )
-            except Exception as e:
-                print(f"   ❌ Fel vid inmatning av data: {e}")
+        print(f"Klar! Tabell '{country}' uppdaterad med {total_chunks} chunks.")
 
 
 if __name__ == "__main__":
