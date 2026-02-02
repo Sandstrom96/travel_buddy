@@ -15,4 +15,9 @@ dependencies = [
     "setuptools>=80.10.2",
     "ipykernel>=7.1.0",
     "sentence-transformers>=5.2.2",
+    "langchain-text-splitters>=1.1.0",
 ]
+
+[build-system]
+requires = ["uv_build>=0.9.21,<0.10.0"]
+build-backend = "uv_build"
