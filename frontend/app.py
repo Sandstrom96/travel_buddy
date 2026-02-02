@@ -1,10 +1,20 @@
 import streamlit as st
 
-st.set_page_config(page_title="Travel Buddy")
+st.set_page_config(
+    page_title="Travel Buddy",
+    page_icon="✈️",
+    layout="wide"
+)
 
-home_page = st.Page("pages/home.py", title="Home", default=True)
-agent_page = st.Page("pages/agent_chat.py", title="Agent")
 
-pg = st.navigation([home_page, agent_page])
+page = st.sidebar.radio(
+    "Navigation",
+    ["🏠 Home", "🍦 Recommendations", "💬 Agent Chat"]
+)
 
-pg.run()
+if page == "🏠 Home":
+    st.switch_page("pages/home.py")
+elif page == "🍦 Recommendations":
+    st.switch_page("pages/recommendations.py")
+elif page == "💬 Agent Chat":
+    st.switch_page("pages/agent_chat.py")

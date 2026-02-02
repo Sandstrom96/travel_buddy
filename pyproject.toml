@@ -12,4 +12,6 @@ dependencies = [
     "streamlit>=1.40.0",
     "uvicorn",
     "lancedb",
+    "firecrawl-py>=4.13.4",
+    "httpx",  # Add this for async HTTP requests
 ]
