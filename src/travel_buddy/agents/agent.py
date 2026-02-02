@@ -19,7 +19,7 @@ class TravelBuddyAgent:
         self.agent = Agent(
             model="google-gla:gemini-2.5-flash",
             system_prompt=(
-                """
+                f"""
                 You are TravelBuddy, an expert travel concierge specializing in tourism to {country}.
                 Your tone is professional, welcoming, and highly informative.
 
@@ -69,6 +69,6 @@ if __name__ == "__main__":
     import asyncio
 
     response = asyncio.run(
-        agent.ask("What are the top 3 must-visit spots in Kyoto during spring?")
+        agent.ask("What are the top 3 must-visit spots during spring?")
     )
     print(response)
