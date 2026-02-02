@@ -18,5 +18,6 @@ class Country(LanceModel):
     category: str = Field(
         description="Content category (destination, practical_guide, spot, news, general)"
     )
+    chunk_index: int = Field(description="Index of the text chunk")
     text: str = embedding_model.SourceField()
     embedding: Vector(embedding_model.ndims()) = embedding_model.VectorField()
