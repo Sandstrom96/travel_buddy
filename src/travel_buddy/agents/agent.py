@@ -4,6 +4,7 @@ from pathlib import Path
 from travel_buddy.db.models import Country
 from travel_buddy.agents.models import RagResponse
 from dotenv import load_dotenv
+import datetime
 
 load_dotenv()
 
@@ -12,12 +13,11 @@ DB_PATH = BASE_DIR / "src" / "travel_buddy" / "knowledge_base"
 
 
 class TravelBuddyAgent:
-    def __init__(self, country: str):
-        db = lancedb.connect(uri=DB_PATH)
-        self.table = db.open_table(country)
-        self.country_name = country
+    def __init__(self):
+        self.db = lancedb.connect(uri=DB_PATH)
+        self.cutoff_date = (datetime.date.today() - datetime.timedelta(days=365)).strftime("%Y-%m-%d")
 
-        self.agent = Agent(
+        self.agent = Agent(     #Prompt är från gemini pro
             model="google-gla:gemini-2.5-flash",
             system_prompt=(
                 f"""
@@ -37,8 +37,9 @@ class TravelBuddyAgent:
         )
         self.result = None
         self.agent.tool_plain(self.search_knowledge_base)
+        self.agent.tool_plain(self.search_web)
 
-    async def search_knowledge_base(self, query: str) -> str:
+    async def search_knowledge_base(self, query: str, country) -> str:
         """
         Search the knowledge base for relevant travel information.
         """

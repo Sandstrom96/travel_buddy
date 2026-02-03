@@ -40,6 +40,11 @@ def clean_markdown_content(raw_text):
         "### Did this information help you",
         "### Thank you for your feedback",
         "## Near",
+        #specifika nyckelord för grekland-data
+        "###### CONTENTS",
+        "_The artwork on the cover",
+        "Follow us on",
+        "Newsletter"
     ]
 
     # Regex för att hitta rubriker som faktiskt är innehåll
