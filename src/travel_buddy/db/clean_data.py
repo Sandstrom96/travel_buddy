@@ -10,7 +10,7 @@ PROCESSED_DATA_DIR = BASE_DIR / "data" / "processed"
 ## Tog hjälp av AI för att skapa detta
 def clean_markdown_content(raw_text):
     """
-    Rensar bort navigering, menyer och boilerplate från japan.travel markdown.
+    Rensar bort navigering, menyer och boilerplate från markdown.
     """
     lines = raw_text.split("\n")
     cleaned_lines = []
@@ -107,29 +107,34 @@ def clean_markdown_content(raw_text):
 
 def extract_frontmatter(text):
     """
-    Extraherar URL och Title från YAML frontmatter.
+    Extraherar URL och Title från YAML frontmatter om det finns.
     """
     metadata = {}
-    # Hitta blocket mellan första --- och andra ---
-    match = re.search(r"^---\s+(.*?)\s+---", text, re.DOTALL)
+    # Gjorde regexet mer tillåtande för mellanslag vid start
+    match = re.search(r"^\s*---\s*\n(.*?)\n\s*---", text, re.DOTALL)
     if match:
         yaml_content = match.group(1)
+        content_after = text[match.end() :].strip()
+
         for line in yaml_content.split("\n"):
             if ":" in line:
                 key, value = line.split(":", 1)
-                metadata[key.strip()] = value.strip().strip('"')
-    return metadata, text[match.end() :] if match else text
+                metadata[key.strip().lower()] = value.strip().strip('"').strip("'")
+        return metadata, content_after
+
+    return {}, text
 
 
-def determine_category(url):
-    """Gissar kategori baserat på URL-strukturen."""
-    if "destinations" in url:
+def determine_category(url_or_filename):
+    """Gissar kategori baserat på URL eller filnamn."""
+    s = url_or_filename.lower()
+    if "destinations" in s:
         return "destination"
-    elif "plan" in url or "guide" in url:
+    elif "plan" in s or "guide" in s:
         return "practical_guide"
-    elif "spot" in url:
+    elif "spot" in s:
         return "spot"  # Specifika sevärdheter
-    elif "news" in url:
+    elif "news" in s:
         return "news"
     else:
         return "general"
@@ -182,23 +187,34 @@ def process_file_list(files, country_name, region_name):
 
             metadata, body_content = extract_frontmatter(raw_content)
 
-            raw_title = metadata.get("title", "Unknown")
-            clean_title = raw_title.split("|")[0].strip()
+            # --- FIX 1: Hantera saknad URL ---
+            url = metadata.get("url")
+            if not url:
+                # Om URL saknas i filen, bygg en från filnamnet
+                # t.ex. www.japan.travel_en_spot_895.md -> https://www.japan.travel/en/spot/895/
+                url_part = file_path.stem.replace("_", "/")
+                url = f"https://{url_part}"
+
+            # --- FIX 2: Hantera titel ---
+            raw_title = metadata.get("title")
+            if not raw_title:
+                # Om titel saknas, använd filnamnet (utan .md) som nödlösning
+                clean_title = file_path.stem.split("_")[-1].capitalize()
+            else:
+                clean_title = raw_title.split("|")[0].strip()
+
             clean_text = clean_markdown_content(body_content)
 
-            if clean_title.lower() == "page not found":
-                continue
-
-            if len(clean_text) < 50:
+            if clean_title.lower() == "page not found" or len(clean_text) < 50:
                 continue
 
             entry = {
                 "filename": file_path.name,
                 "country": country_name,
                 "region": region_name,  # Här blir det "General" för visum-filerna
-                "url": metadata.get("url", ""),
+                "url": url,
                 "title": clean_title,
-                "category": determine_category(metadata.get("url", "")),
+                "category": determine_category(url),
                 "text": clean_text,
             }
             processed_entries.append(entry)
