@@ -2,6 +2,7 @@ from pydantic_ai import Agent
 import lancedb
 from pathlib import Path
 from travel_buddy.db.models import Country
+from travel_buddy.agents.models import RagResponse
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -32,8 +33,9 @@ class TravelBuddyAgent:
                 5. Always respond in the same language as the user's query.
             """
             ),
+            output_type=RagResponse,
         )
-
+        self.result = None
         self.agent.tool_plain(self.search_knowledge_base)
 
     async def search_knowledge_base(self, query: str) -> str:
@@ -60,15 +62,15 @@ class TravelBuddyAgent:
 
         return "\n".join(context_chunks)
 
-    async def ask(self, user_query: str):
-        return await self.agent.run(user_query)
+    async def ask(self, user_query: str, history: list = None):
+        message_history = history if history else None
 
+        self.result = await self.agent.run(user_query, message_history=message_history)
 
-if __name__ == "__main__":
-    agent = TravelBuddyAgent(country="japan")
-    import asyncio
-
-    response = asyncio.run(
-        agent.ask("What are the top 3 must-visit spots during spring?")
-    )
-    print(response)
+        return {
+            "user": user_query,
+            "ai": self.result.output.result,
+            "sources": self.result.output.sources,
+            "regions": self.result.output.regions,
+            "history": self.result.all_messages(),
+        }
