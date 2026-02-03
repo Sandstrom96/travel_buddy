@@ -60,12 +60,12 @@ def ingest_db():
 
             # Loopa igenom varje rad och skapa chunks
             for _, row in df.iterrows():
-                oringinal_text = row.get("text", "")
+                original_text = row.get("text", "")
 
-                if not oringinal_text:
+                if not original_text:
                     continue
 
-                chunks = splitter.split_text(oringinal_text)
+                chunks = splitter.split_text(original_text)
 
                 # För varje chunk, skapa ett nytt objekt att lägga till i databasen
                 for index, chunk_text in enumerate(chunks):
