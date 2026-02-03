@@ -2,9 +2,7 @@ from pydantic_ai import Agent
 import lancedb
 from pathlib import Path
 from travel_buddy.db.models import Country
-from travel_buddy.agents.models import RagResponse
 from dotenv import load_dotenv
-import datetime
 
 load_dotenv()
 
@@ -15,27 +13,36 @@ DB_PATH = BASE_DIR / "src" / "travel_buddy" / "knowledge_base"
 class TravelBuddyAgent:
     def __init__(self):
         self.db = lancedb.connect(uri=DB_PATH)
-        self.cutoff_date = (datetime.date.today() - datetime.timedelta(days=365)).strftime("%Y-%m-%d")
 
         self.agent = Agent(     #Prompt är från gemini pro
             model="google-gla:gemini-2.5-flash",
             system_prompt=(
                 f"""
-                You are TravelBuddy, an expert travel concierge specializing in tourism to {country}.
-                Your tone is professional, welcoming, and highly informative.
+                Du är TravelBuddy, en expert-concierge för resor till både Japan och Grekland.
+                Din uppgift är att ge exakta och inspirerande svar.
 
-                RULES:
-                1. Answer questions ONLY using the information provided in the retrieved context. 
-                Do not use outside knowledge or hallucinations.
-                2. If the context does not contain the answer, state: "I'm sorry, but I couldn't find official information regarding that specific request in my records."
-                3. Prioritize details like seasons, opening hours, and entry requirements.
-                4. Keep responses concise but evocative. For broad queries, provide the top 3 recommendations.
-                5. Always respond in the same language as the user's query.
-            """
+                DIN KUNSKAPSMALL:
+                - Din interna databas (Knowledge Base) är din primära mall och "sanning". Utgå alltid från denna först.
+                - Om databasen innehåller information, använd den som bas för ditt svar.
+
+                REGLER FÖR NÄTET:
+                Du ska använda webbsökning (search_web) i följande scenarier:
+                1. Om specifik information helt saknas i din databas.
+                2. Om användaren ber om detaljer som kräver realtidsuppdatering (t.ex. specifika öppettider, biljettpriser just nu eller lokala väderförhållanden).
+                3. För att bekräfta att informationen i din mall fortfarande är aktuell om du misstänker att något ändrats.
+
+                KRAV PÅ SVAR:
+                - Om du hittar nyare eller mer specifik information på nätet som kompletterar databasen, nämna detta kort (t.ex. "Enligt de senaste uppdateringarna...").
+                - Inkludera alltid käll-URL:er för all information du hämtar.
+                - Svara på samma språk som användaren skriver på.
+                
+                TEKNISKT:
+                - Databasen är på ENGELSKA. Översätt sökningar dit.
+                - För country-parametern: använd 'greece' eller 'japan'.
+                """
             ),
-            output_type=RagResponse,
         )
-        self.result = None
+
         self.agent.tool_plain(self.search_knowledge_base)
         self.agent.tool_plain(self.search_web)
 
@@ -43,35 +50,47 @@ class TravelBuddyAgent:
         """
         Search the knowledge base for relevant travel information.
         """
+        try:
+            table = self.db.open_table(country.lower())
+            results = table.search(query=query).limit(5).to_pydantic(Country)
 
-        results = self.table.search(query=query).limit(3).to_pydantic(Country)
+            if not results:
+                return "No relevant information found."
 
-        if not results:
-            return "No relevant information found."
+            context_chunks = []
+            for item in results:
+                chunk = (
+                    f"TITLE: {item.title}\n"
+                    f"REGION: {item.region}\n"
+                    f"CATEGORY: {item.category}\n"
+                    f"CONTENT: {item.text}\n"
+                    f"SOURCE URL: {item.url}\n"
+                    "---"
+                )
+                context_chunks.append(chunk)
 
-        context_chunks = []
-        for item in results:
-            chunk = (
-                f"TITLE: {item.title}\n"
-                f"REGION: {item.region}\n"
-                f"CATEGORY: {item.category}\n"
-                f"CONTENT: {item.text}\n"
-                f"SOURCE URL: {item.url}\n"
-                "---"
-            )
-            context_chunks.append(chunk)
+            return "\n".join(context_chunks)
+        except Exception as e:
+            return f"Kunde inte hitta databas-tabellen för {country}. Felmeddelande: {e}"
 
-        return "\n".join(context_chunks)
-
+    async def search_web(self, query: str) -> str:
+        """
+        Search the web for relevant travel information.
+        """
+        web_query = f"{query} latest updates"
+        # TODO: Här måste vi koppla på sök API tex tavily eller någoot från miro
+        return f"Söker på nätet efter: {web_query}... (Väntar på API-koppling)"
+    
     async def ask(self, user_query: str, history: list = None):
-        message_history = history if history else None
+        return await self.agent.run(user_query, message_history=history)
 
-        self.result = await self.agent.run(user_query, message_history=message_history)
 
-        return {
-            "user": user_query,
-            "ai": self.result.output.result,
-            "sources": self.result.output.sources,
-            "regions": self.result.output.regions,
-            "history": self.result.all_messages(),
-        }
+if __name__ == "__main__":
+    import asyncio
+    async def test():
+        print("Testing TravelBuddyAgent...")
+        agent = TravelBuddyAgent()
+        print("?nAgent answer:")
+        response = await agent.ask("Vilka sevärdheter i Tokyo får jag inte missa?") # Ändra till det land du vill testa.
+        print(response)
+    asyncio.run(test())
