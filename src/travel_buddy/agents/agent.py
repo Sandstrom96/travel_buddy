@@ -20,7 +20,7 @@ class TravelBuddyAgent:
         self.agent = Agent(
             model="google-gla:gemini-2.5-flash",
             system_prompt=(
-                """
+                f"""
                 You are TravelBuddy, an expert travel concierge specializing in tourism to {country}.
                 Your tone is professional, welcoming, and highly informative.
 
@@ -35,7 +35,7 @@ class TravelBuddyAgent:
             ),
             output_type=RagResponse,
         )
-
+        self.result = None
         self.agent.tool_plain(self.search_knowledge_base)
 
     async def search_knowledge_base(self, query: str) -> str:
@@ -62,25 +62,15 @@ class TravelBuddyAgent:
 
         return "\n".join(context_chunks)
 
-    async def ask(self, user_query: str):
-        message_history = self.result.all_messages() if self.result else None
-        self.result = await self.agent.run_async(
-            user_query, message_history=message_history
-        )
+    async def ask(self, user_query: str, history: list = None):
+        message_history = history if history else None
+
+        self.result = await self.agent.run(user_query, message_history=message_history)
 
         return {
             "user": user_query,
             "ai": self.result.output.result,
             "sources": self.result.output.sources,
             "regions": self.result.output.regions,
+            "history": self.result.all_messages(),
         }
-
-
-if __name__ == "__main__":
-    agent = TravelBuddyAgent(country="japan")
-    import asyncio
-
-    response = asyncio.run(
-        agent.ask("What are the top 3 must-visit spots in Kyoto during spring?")
-    )
-    print(response)
