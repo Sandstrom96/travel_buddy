@@ -1,10 +1,10 @@
 from pydantic_ai import Agent
 import lancedb
-from pathlib import Path
 from travel_buddy.db.models import Country
 from travel_buddy.agents.models import RagResponse
 from pydantic_ai.common_tools.tavily import tavily_search_tool
 from travel_buddy.utils.settings import settings
+import os
 
 
 class TravelBuddyAgent:
@@ -12,6 +12,9 @@ class TravelBuddyAgent:
         db = lancedb.connect(uri=settings.DB_PATH)
         self.table = db.open_table(country)
         self.country_name = country
+
+        os.environ["GOOGLE_API_KEY"] = settings.GOOGLE_API_KEY
+        tavily = tavily_search_tool(api_key=settings.TAVILY_API_KEY)
 
         self.agent = Agent(
             model="google-gla:gemini-2.5-flash",
@@ -22,7 +25,7 @@ class TravelBuddyAgent:
 
                 ### WORKFLOW & TOOLS:
                 1. For general recommendations (what to do, where to go): Use 'search_knowledge_base' ONLY.
-                2. For specific real-time details (opening hours, ticket prices, or if the database info is incomplete): Use 'tavily_search_tool'.
+                2. For specific real-time details (opening hours, ticket prices, or if the database info is incomplete): Use 'tavily'.
                 3. Use the search engine ONLY as a supplement to the database or for real-time data.
 
                 ### RULES:
@@ -65,10 +68,10 @@ class TravelBuddyAgent:
             """
             ),
             output_type=RagResponse,
+            tools=[tavily],
         )
 
         self.agent.tool_plain(self.search_knowledge_base)
-        self.agent.tool(tavily_search_tool(api_key=settings.TAVILY_API_KEY))
 
     async def search_knowledge_base(self, query: str) -> str:
         """
@@ -95,9 +98,7 @@ class TravelBuddyAgent:
         return "\n".join(context_chunks)
 
     async def ask(self, user_query: str, history: list = None):
-        message_history = history if history else None
-
-        self.result = await self.agent.run(user_query, message_history=message_history)
+        self.result = await self.agent.run(user_query, message_history=history)
 
         return {
             "user": user_query,
