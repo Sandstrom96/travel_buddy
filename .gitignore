@@ -1,3 +1,9 @@
+# Projekt-specifik data
+data/
+*.jsonl
+*.lance/
+.env
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
@@ -219,3 +225,5 @@ __marimo__/
 
 #env
 .env
+data/raw
+knowledge_base/

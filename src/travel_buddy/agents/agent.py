@@ -1,0 +1,77 @@
+from pydantic_ai import Agent
+import lancedb
+from pathlib import Path
+from travel_buddy.db.models import Country
+from travel_buddy.agents.models import RagResponse
+from dotenv import load_dotenv
+import datetime
+
+load_dotenv()
+
+BASE_DIR = Path(__file__).parents[3]
+DB_PATH = BASE_DIR / "src" / "travel_buddy" / "knowledge_base"
+
+
+class TravelBuddyAgent:
+    def __init__(self):
+        self.db = lancedb.connect(uri=DB_PATH)
+        self.cutoff_date = (datetime.date.today() - datetime.timedelta(days=365)).strftime("%Y-%m-%d")
+
+        self.agent = Agent(     #Prompt är från gemini pro
+            model="google-gla:gemini-2.5-flash",
+            system_prompt=(
+                f"""
+                You are TravelBuddy, an expert travel concierge specializing in tourism to {country}.
+                Your tone is professional, welcoming, and highly informative.
+
+                RULES:
+                1. Answer questions ONLY using the information provided in the retrieved context. 
+                Do not use outside knowledge or hallucinations.
+                2. If the context does not contain the answer, state: "I'm sorry, but I couldn't find official information regarding that specific request in my records."
+                3. Prioritize details like seasons, opening hours, and entry requirements.
+                4. Keep responses concise but evocative. For broad queries, provide the top 3 recommendations.
+                5. Always respond in the same language as the user's query.
+            """
+            ),
+            output_type=RagResponse,
+        )
+        self.result = None
+        self.agent.tool_plain(self.search_knowledge_base)
+        self.agent.tool_plain(self.search_web)
+
+    async def search_knowledge_base(self, query: str, country) -> str:
+        """
+        Search the knowledge base for relevant travel information.
+        """
+
+        results = self.table.search(query=query).limit(3).to_pydantic(Country)
+
+        if not results:
+            return "No relevant information found."
+
+        context_chunks = []
+        for item in results:
+            chunk = (
+                f"TITLE: {item.title}\n"
+                f"REGION: {item.region}\n"
+                f"CATEGORY: {item.category}\n"
+                f"CONTENT: {item.text}\n"
+                f"SOURCE URL: {item.url}\n"
+                "---"
+            )
+            context_chunks.append(chunk)
+
+        return "\n".join(context_chunks)
+
+    async def ask(self, user_query: str, history: list = None):
+        message_history = history if history else None
+
+        self.result = await self.agent.run(user_query, message_history=message_history)
+
+        return {
+            "user": user_query,
+            "ai": self.result.output.result,
+            "sources": self.result.output.sources,
+            "regions": self.result.output.regions,
+            "history": self.result.all_messages(),
+        }

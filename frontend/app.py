@@ -1,20 +1,43 @@
 import streamlit as st
+from frontend_utils.api_client import get_backend_health
 
 st.set_page_config(
     page_title="Travel Buddy",
     page_icon="✈️",
-    layout="wide"
+    layout="wide",
 )
 
-
-page = st.sidebar.radio(
-    "Navigation",
-    ["🏠 Home", "🍦 Recommendations", "💬 Agent Chat"]
+home_page = st.Page(
+    "pages/home.py",
+    title="Hem",
+    icon="🏠",
+    default=True
 )
 
-if page == "🏠 Home":
-    st.switch_page("pages/home.py")
-elif page == "🍦 Recommendations":
-    st.switch_page("pages/recommendations.py")
-elif page == "💬 Agent Chat":
-    st.switch_page("pages/agent_chat.py")
+agent_page = st.Page(
+    "pages/agent_chat.py",
+    title="Chat",
+    icon="💬"
+)
+
+pg = st.navigation(
+    {
+        "Meny": [home_page, agent_page]
+    }
+)
+
+st.sidebar.title("Travel Buddy")
+st.sidebar.info ("Din personliga AI-guide")
+
+st.sidebar.divider()
+st.sidebar.write("Systemstatus")
+
+health_status = get_backend_health()
+
+if health_status.get("status") == "healthy":
+    st.sidebar.success("Backend: Online")
+else:
+    st.sidebar.error(f"Backend: Offline - {health_status.get('detail')}")
+
+
+pg.run()

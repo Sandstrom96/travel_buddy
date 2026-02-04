@@ -1,0 +1,31 @@
+#.dockerignore skapad av gemini:
+# Ignorera versionshantering
+.git
+.gitignore
+
+# Ignorera lokala miljöer (Boven i dramat!)
+.venv
+venv
+ENV
+env
+
+# Ignorera cache och temporära filer
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache
+.mypy_cache
+.ruff_cache
+
+# Ignorera dokumentation och docker-filer (behövs inte INNE i appen)
+docs
+docker
+README.md
+LICENSE
+scripts
+
+# Ignorera lokala inställningar
+.env
+.vscode
+.idea
