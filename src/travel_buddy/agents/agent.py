@@ -24,6 +24,7 @@ class TravelBuddyAgent:
                 DIN KUNSKAPSMALL:
                 - Din interna databas (Knowledge Base) är din primära mall och "sanning". Utgå alltid från denna först.
                 - Om databasen innehåller information, använd den som bas för ditt svar.
+                - Om användaren frågar om ett specifikt resmål (t.ex. Thessaloniki), sök ALLTID i din Knowledge Base efter sevärdheter och tips DÄR, även om du också behöver söka på nätet efter andra detaljer.
 
                 REGLER FÖR NÄTET:
                 Du ska använda webbsökning (search_web) i följande scenarier:

@@ -30,4 +30,4 @@ async def agent_chat( request:ChatRequest):
 
     if thread_id:
         chat_histories[thread_id] = result.all_messages()
-    return ChatResponse(response=result.data)
+    return ChatResponse(response=result.output)
