@@ -1,6 +1,3 @@
-# This was written by Gemini Pro
-
-
 import asyncio
 import sys
 from pathlib import Path
@@ -11,35 +8,37 @@ sys.path.append(str(root_dir / "src"))
 from travel_buddy.agents.agent import TravelBuddyAgent
 
 async def run_comprehensive_test():
-    agent = TravelBuddyAgent()
-    
-    print("\n" + "="*60)
-    print("KÖR OMFATTANDE INTEGRATIONSTEST: TRAVELBUDDY")
-    print("="*60)
+    print("\n" + "="*70)
+    print("KÖR INTEGRATIONSTEST: TRAVELBUDDY")
+    print("="*70)
 
     # TEST 1: Japan (Kunskapsmall)
-    print("\n[TEST 1] Söker i Japan-datan...")
-    res1 = await agent.ask("Vilka tempel rekommenderas i Tokyo?")
-    print(f"SVAR: {res1.output}")
+    print("\n[TEST 1] Verifierar Japan-databas...")
+    agent_jp = TravelBuddyAgent(country="japan")
+    res1 = await agent_jp.ask("Vilka tempel rekommenderas i Tokyo?")
+    print(f"AI: {res1['ai']}")
+    print(f"Källor: {res1['sources']}")
 
-    # TEST 2: Grekland (Din nya data)
-    print("\n[TEST 2] Söker i Grekland-datan...")
-    res2 = await agent.ask("Vad kan man göra på de Joniska öarna?")
-    print(f"SVAR: {res2.output}")
+    # TEST 2: Grekland (Din data)
+    print("\n[TEST 2] Verifierar Grekland-databas...")
+    agent_gr = TravelBuddyAgent(country="greece")
+    res2 = await agent_gr.ask("Berätta om Thessaloniki.")
+    print(f"AI: {res2['ai']}")
+    print(f"Källor: {res2['sources']}")
 
-    # TEST 3: Realtid/Webb (Ska trigga webbsök-logiken)
-    print("\n[TEST 3] Testar behov av nätet (öppettider)...")
-    res3 = await agent.ask("När öppnar Akropolismuseet imorgon?")
-    print(f"SVAR: {res3.output}")
+    # TEST 3: Webb (Tavily)
+    print("\n[TEST 3] Verifierar Tavily (Realtid)...")
+    res3 = await agent_gr.ask("Vad är vädret i Aten just nu?")
+    print(f"AI: {res3['ai']}")
 
-    # TEST 4: Historik (Minne)
-    print("\n[TEST 4] Testar kontext och historik...")
-    res4 = await agent.ask("Hur tar jag mig dit från centrum?", history=res3.all_messages())
-    print(f"SVAR: {res4.output}")
+    # TEST 4: Minne (Historik)
+    print("\n[TEST 4] Verifierar Chatthistorik...")
+    res4 = await agent_gr.ask("Hur tar jag mig dit från flygplatsen?", history=res3['history'])
+    print(f"AI: {res4['ai']}")
 
-    print("\n" + "="*60)
+    print("\n" + "="*70)
     print("TESTER SLUTFÖRDA")
-    print("="*60)
+    print("="*70)
 
 if __name__ == "__main__":
     asyncio.run(run_comprehensive_test())

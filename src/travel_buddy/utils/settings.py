@@ -1,13 +1,26 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import Field
+from pathlib import Path
+
 
 class Settings(BaseSettings):
-    firecrawl_api_key: str
-    google_api_key: str
-    lancedb_path: str = "data/lancedb"
-    embedding_model: str = "sentence-transformers/all-MiniLM-L6-v2"
-    chunk_size: int = 500
-    chunk_overlap: int = 50
+    GOOGLE_API_KEY: str
+    TAVILY_API_KEY: str
 
-    model_config = SettingsConfigDict(env_file=".env")
+    PROCESSED_DATA_DIR: Path = Field(
+        default_factory=lambda: Path(__file__).parents[3] / "data" / "processed"
+    )
+    DB_PATH: Path = Field(
+        default_factory=lambda: Path(__file__).parents[3]
+        / "src"
+        / "travel_buddy"
+        / "knowledge_base"
+    )
+
+    model_config = SettingsConfigDict(env_file=".env", env_ignore_empty=True)
+
 
 settings = Settings()
+
+if __name__ == "__main__":
+    print(settings.model_dump())
