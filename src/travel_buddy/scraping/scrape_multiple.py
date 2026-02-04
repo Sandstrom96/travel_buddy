@@ -15,7 +15,7 @@ PAGES_TO_SCRAPE = {
         {
             "name": "kyoto_overview",
             "url": "https://www.japan-guide.com/e/e2401.html",
-            "destination": "osaka",
+            "destination": "kyoto",
             "category": "destination"
         },
     ],
@@ -28,7 +28,7 @@ PAGES_TO_SCRAPE = {
         },
         {
             "name": "fushimi_inari",
-            "url": "https://www.japan-guide.com/e/e3900.html",
+            "url": "https://www.japan-guide.com/e/e3915.html",
             "destination": "kyoto",
             "category": "attraction"
         },
@@ -90,8 +90,8 @@ class TravelBuddyScraper:
             print(f"\n🔄 Scraping: {name}")
             print(f"  URL: {url}")
 
-            response = self.app.scrape_url(url, params={'formats': ['markdown']})
-            markdown_content = response.get('markdown', '')
+            response = self.app.scrape(url, formats=['markdown'])
+            markdown_content = response.markdown if hasattr(response, 'markdown') else (response.content if hasattr(response, 'content') else '')
 
             if not markdown_content:
                 print(f"  ⚠️ No content returned")

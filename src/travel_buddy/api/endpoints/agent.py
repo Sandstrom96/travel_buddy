@@ -1,47 +1,66 @@
-"""Agent endpoints."""
-
-from fastapi import APIRouter
-from travel_buddy.agents.agent import TravelBuddyAgent
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-from typing import Optional, List, Any
+from travel_buddy.services.rag_service import RAGService
+from typing import Optional
 
-router = APIRouter()
-chat_histories: Dict[str, List[ModelMessage]] = {}
+router = APIRouter(prefix="/agent", tags=["agent"])
 
-agent = Agent(
-    "google-gla:gemini-2.0-flash",
-    system_prompt="Du är Travel Buddy, en expert på resor till Japan. Hjälp användaren med detaljerad information om sevärdheter, kultur och resplaner",
-)
+rag_service = None
 
-class ChatRequest(BaseModel):
-    query: str
-    thread_id: str | None = None
+def get_rag_service():
+    global rag_service
+    if rag_service is None:
+        rag_service = RAGService()
+    return rag_service
 
-class ChatResponse(BaseModel):
-    response: str
-    
-
-
-@router.post("/chat", response_model=ChatResponse)
-async def agent_chat( request:ChatRequest):
-    user_query = request.query
-    thread_id = request.thread_id
-    message_history = chat_histories.get(thread_id) if thread_id else None
-
-    result = await agent.run(user_query, message_history=message_history)
-
-    if thread_id:
-        chat_histories[thread_id] = result.all_messages()
-    return ChatResponse(response=result.output)
 
 class ChatRequest(BaseModel):
     message: str
-    country: str
-    history: Optional[List[Any]] = []
+    destination: Optional[str] = None
 
 
-@router.post("/chat")
-async def agent_chat(request: ChatRequest):
-    agent = TravelBuddyAgent(country=request.country)
-    result = await agent.ask(user_query=request.message, history=request.history)
-    return result
+class ChatResponse(BaseModel):
+    response: str
+    sources: list[dict]
+    context_used: int
+
+
+@router.post("/chat", response_model=ChatResponse)
+async def chat(request: ChatRequest):
+    print(f"DEBUG ENDPOINT: Received request: {request.message}")
+    try:
+        print("DEBUG ENDPOINT: Getting RAG service...")
+        service = get_rag_service()
+        print("DEBUG ENDPOINT: Calling query...")
+        result = service.query(
+            question=request.message,
+            destination=request.destination
+        )
+        print(f"DEBUG ENDPOINT: Got result with answer length: {len(result['answer'])}")
+
+        return ChatResponse(
+            response=result["answer"],
+            sources=result["sources"],
+            context_used=result["context_used"]
+        )
+    except Exception as e:
+        print(f"ERROR ENDPOINT: {e}")
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=str(e))
+    
+
+@router.get("/")
+async def agent_info():
+    return {
+        "name": "Travel Buddy AI",
+        "description": "AI travel guide powered by RAG",
+        "example_questions": [
+            "What are the visa requirements for Japan?",
+            "Tell me more about Fushimi Inari shrine",
+            "When is the best time to see cherry blossoms?",
+            "What can I do in Tokyo?",
+            "Tell me more about Gion Matsuri festival"
+        ]
+    }
+
