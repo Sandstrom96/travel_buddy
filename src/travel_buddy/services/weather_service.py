@@ -6,6 +6,26 @@ class WeatherService:
     """Free weather service using Open_Meteo API"""
 
     BASE_URL = "https://api.open-meteo.com/v1/forecast"
+    GEO_URL = "https://geocoding-api.open-meteo.com/v1/search"
+
+    @staticmethod
+    async def get_location_coordinates(city: str) -> dict:
+        params = {"name": city, "count": 1, "format": "json"}
+
+        async with httpx.AsyncClient() as client:
+            response = await client.get(WeatherService.GEO_URL, params=params)
+            response.raise_for_status()
+            results = response.json().get("results", [])
+
+            if not results:
+                return None
+
+            return {
+                "lat": results[0]["latitude"],
+                "lon": results[0]["longitude"],
+                "name": results[0]["name"],
+                "country": results[0]["country"],
+            }
 
     @staticmethod
     async def get_weather(latitude: float, longitude: float) -> WeatherInfo:
