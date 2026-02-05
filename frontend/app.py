@@ -1,33 +1,19 @@
 import streamlit as st
 
-st.set_page_config(
-    page_title="Travel Buddy",
-    page_icon="✈️",
-    layout="wide",
-)
-
-home_page = st.Page(
-    "pages/home.py",
-    title="Hem",
-    icon="🏠",
-    default=True
-)
-
-agent_page = st.Page(
-    "pages/agent_chat.py",
-    title="Chat",
-    icon="💬"
-)
-rec_page = st.Page("pages/recommendations.py", title= "Rekommendationer", icon="📍")
-
-pg = st.navigation(
-    {
-        "Meny": [home_page, agent_page, rec_page]
-    }
-)
+if "selected_country" not in st.session_state:
+    st.session_state.selected_country = "Japan"
 
 st.sidebar.title("Travel Buddy")
-st.sidebar.info ("Din personliga AI-guide")
+st.session_state.selected_country = st.sidebar.selectbox(
+    "Välj Land", ["Japan", "Greece"], index=0
+)
+
+home_page = st.Page("pages/home.py", title="Hem", icon="🏠", default=True)
+agent_page = st.Page("pages/agent_chat.py", title="Chat", icon="💬")
+rec_page = st.Page("pages/recommendations.py", title="Recommendations", icon="📍")
+
+
+pg = st.navigation([home_page, agent_page, rec_page])
 
 
 pg.run()
