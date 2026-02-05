@@ -4,11 +4,7 @@ from travel_buddy.db.models import Country
 from travel_buddy.agents.models import RagResponse
 from pydantic_ai.common_tools.tavily import tavily_search_tool
 from travel_buddy.utils.settings import settings
-from pathlib import Path
 import os
-from dotenv import load_dotenv
-
-load_dotenv()
 
 
 class TravelBuddyAgent:

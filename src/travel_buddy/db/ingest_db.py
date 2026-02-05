@@ -3,10 +3,7 @@ import pandas as pd
 from pathlib import Path
 from travel_buddy.db.models import Country
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-
-BASE_DIR = Path(__file__).parents[3]
-PROCESSED_DATA_DIR = BASE_DIR / "data" / "processed"
-DB_PATH = BASE_DIR / "src" / "travel_buddy" / "knowledge_base"
+from travel_buddy.utils.settings import settings
 
 
 def setup_db(path, table_name):
@@ -18,7 +15,7 @@ def setup_db(path, table_name):
 
 
 def ingest_db():
-    files = list(PROCESSED_DATA_DIR.glob("*.jsonl"))
+    files = list(settings.PROCESSED_DATA_DIR.glob("*.jsonl"))
 
     if not files:
         print("Inga filer hittades i data/processed")
@@ -46,7 +43,7 @@ def ingest_db():
         print(f"\n--- Importerar data till tabellen: {country} ---")
 
         # Sätt upp databasen och skapa tabell med rätt schema
-        db = setup_db(DB_PATH, country)
+        db = setup_db(settings.DB_PATH, country)
         table = db.open_table(country)
 
         total_chunks = 0

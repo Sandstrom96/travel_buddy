@@ -2,8 +2,7 @@ import requests
 import os
 from frontend_utils.settings import settings
 
-load_dotenv()
-BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000").rstrip("/")
+BACKEND_URL = settings.BACKEND_URL
 
 
 class APIClient:
