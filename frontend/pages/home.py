@@ -2,11 +2,18 @@
 import streamlit as st
 import requests
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
+BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000").rstrip('/')
 
 def fetch_destinations():
     backend_url = os.environ.get("BACKEND_URL", "http://localhost:8000")
     try:
         response = requests.get(f"{backend_url}/destinations", timeout=10)
+        url = f"{BACKEND_URL}/destinations"
+        response =requests.get(url, timeout=10)
+
         if response.status_code == 200:
             return response.json().get("destinations", [])
         else:
@@ -14,44 +21,50 @@ def fetch_destinations():
             return []
     except requests.exceptions.ConnectionError:
         st.warning("Backend är inte tillgänglig just nu. Starta servern för att se destinationer.")
+        st.error(f"Kunde inte ansluta till backend på {BACKEND_URL}. Är servern igång?")
         return []
     except Exception as e:
         st.warning(f"Ett fel uppstod: {e}")
         return []
 
 def main():
-    st.title("Upptäck Världen på rätt sätt")
-    st.write("Välkommen till Travel Buddy!")
+    st.title("🌍 Upptäck Världen med Travel Buddy")
+    st.markdown("""
+        Välkommen! Här hittar du handplockade destinationer för ditt nästa äventyr. 
+        Välj ett land i menyn till vänster för att börja chatta med din personliga guide.
+    """)
     st.divider()
 
     destinations = fetch_destinations()
 
     if not destinations:
-        st.info("Inga destinationer kunde laddas just nu.")
+        st.info("Hittade inga sparade destinationer. Har du kört din ingestion?")
         return
     
-    for desti in destinations:
-        with st.container(border=True):
-            col1, col2 = st.columns([3, 1])
 
-            with col1:
+    cols = st.columns(2)
+    for idx, desti in enumerate(destinations):
+
+        with cols[idx % 2]:
+            with st.container(border=True):
                 name = desti.get("name", "Okänd plats")
                 country = desti.get("country", "")
                 region = desti.get("region", "")
-                desc =desti.get("description", "Ingen beskrivning tillgänglig.")
+                desc = desti.get("description", "Ingen beskrivning tillgänglig.")
 
-                location_str = f"{country}"
-                if region:
-                    location_str += f", {region}"
+                location_icon = "📍"
+                st.subheader(f"{name}")
+                st.caption(f"{location_icon} {country}{f' • {region}' if region else ''}")
                 
-                st.subheader(name)
-                st.caption(location_str)
-                st.write(desc)
-            
-            with col2:
-                st.write("")
-                st.write("")
-                st.button("Utforska", key=f"btn_{desti.get('id')}", use_container_width=True)
 
+                short_desc = (desc[:120] + '...') if len(desc) > 120 else desc
+                st.write(short_desc)
+
+                st.button(
+                    "Utforska resmål", 
+                    key=f"btn_{desti.get('id', idx)}", 
+                    use_container_width=True,
+                    type="secondary"
+                )
 if __name__ == "__main__":
     main()

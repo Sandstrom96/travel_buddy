@@ -21,7 +21,7 @@ class APIClient:
         payload = {
             "user_latitude": user_lat,
             "user_longitude": user_lon,
-            "activity_type": activity_type,
+            "activity_type": sanitized_activity,
             "max_results": max_results,
         }
         try:
