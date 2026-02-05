@@ -12,9 +12,9 @@ except ValueError:
 
 selected = st.sidebar.selectbox(
     "Välj Land",
-    ["Japan",
-    "Greece"],
-    index=current_idx
+    options,
+    index=current_idx,
+    key="selected_country"
 )
 st.session_state.selected_country = selected
 
