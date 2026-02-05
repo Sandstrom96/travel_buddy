@@ -67,12 +67,29 @@ def main():
                 short_desc = (desc[:120] + "...") if len(desc) > 120 else desc
                 st.write(short_desc)
 
-                st.button(
+
+                if st.button(
                     "Utforska resmål",
                     key=f"btn_{desti.get('id', idx)}",
                     use_container_width=True,
                     type="secondary",
-                )
+                ):
+                    
+                    st.session_state.selected_destination = {
+                        "name": name,
+                        "country": country,
+                        "region": region,
+                        "description": desc
+                    }
+
+                    st.session_state.selected_country = country
+
+                    st.session_state.messages = []
+                    st.session_state.agent_history = []
+                    st.session_state.current_sources = []
+                    
+                    st.switch_page("pages/agent_chat.py")
+
 
 
 if __name__ == "__main__":

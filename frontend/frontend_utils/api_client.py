@@ -1,12 +1,12 @@
 import requests
 import os
-from settings import settings
 
-BACKEND_URL = settings.BACKEND_URL
+
+BACKEND_URL = os.environ.get("BACKEND_URL", "http://localhost:8000")
 
 
 class APIClient:
-    # För att hålla recommendations.py nöjd(inte krascha).
+    # To keep recommendations.py happy (not crashing).
     @staticmethod
     def get_health():
         try:
@@ -30,7 +30,6 @@ class APIClient:
             "max_results": max_results,
         }
         try:
-            # Notera: Kontrollera om din backend-url kräver /recommendations/
             response = requests.post(
                 f"{BACKEND_URL}/recommendations/", json=payload, timeout=10
             )
@@ -41,9 +40,52 @@ class APIClient:
         except Exception as e:
             print(f"Error fetching recommendations: {e}")
             return []
+    
+    @staticmethod 
+    def get_airports(city: str):
+        try:
+            response = requests.get(f"{BACKEND_URL}/transport/airports/{city}", timeout=5)
+            if response.status_code == 200:
+                return response.json()
+            else:
+                return []
+        except Exception as e:
+            print(f"Error fetching airports: {e}")
+            return []
+    
+    @staticmethod
+    def get_hotels_areas(city: str):
+        try:
+            response = requests.get(f"{BACKEND_URL}/transport/hotels/{city}", timeout=5)
+            if response.status_code == 200:
+                return response.json()
+            else:
+                return []
+        except Exception as e:
+            print(f"Error fetching hotel areas: {e}")
+            return []
+    
+    @staticmethod
+    def get_transport_route(origin_lat: float, origin_lon: float, dest_lat: float, dest_lon: float):
+        try:
+            payload = {
+                "origin_lat": origin_lat,
+                "origin_lon": origin_lon,
+                "dest_lat": dest_lat,
+                "dest_lon": dest_lon
+            }
+            response = requests.post(f"{BACKEND_URL}/transport/route", json=payload, timeout=10)
+            if response.status_code == 200:
+                return response.json()
+            else:
+                return []
+        except Exception as e:
+            print(f"Error calculating route: {e}")
+            return []
 
 
-# används för hälsokontroll i sidomenyn
+
+# healthcheck
 def get_backend_health():
     return APIClient.get_health()
 
@@ -63,8 +105,10 @@ def send_chat_message(query: str, country: str, history: list = None):
             return response.json()
         else:
             return {
-                "response": f"Servern svarade med statuskod: {response.status_code}",
+                "response": f"The server responded with status code: {response.status_code}",
                 "history": history or [],
             }
     except Exception as e:
-        return {"response": f"Ett okänt fel uppstod: {e}", "history": history or []}
+        return {"response": f"An unknown error occurred: {e}", "history": history or []}
+
+

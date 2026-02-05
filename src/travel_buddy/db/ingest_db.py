@@ -18,10 +18,10 @@ def ingest_db():
     files = list(settings.PROCESSED_DATA_DIR.glob("*.jsonl"))
 
     if not files:
-        print("Inga filer hittades i data/processed")
+        print("No files found in data/processed")
         return
 
-    # Konfigurera text splitter
+    # Configure text splitter
     splitter = RecursiveCharacterTextSplitter(
         chunk_size=1000, chunk_overlap=200, separators=["\n\n", "\n", ".  ", " ", ""]
     )
@@ -37,25 +37,25 @@ def ingest_db():
 
             country_files[country].append(file_path)
         else:
-            print(f"Hoppar över fil med felaktigt namnformat: {filename}")
+            print(f"Skipping file with incorrect name format: {filename}")
 
     for country, file_list in country_files.items():
-        print(f"\n--- Importerar data till tabellen: {country} ---")
+        print(f"\n--- Importing data to table: {country} ---")
 
-        # Sätt upp databasen och skapa tabell med rätt schema
+        # Set up database and create table with correct schema
         db = setup_db(settings.DB_PATH, country)
         table = db.open_table(country)
 
         total_chunks = 0
 
         for f in file_list:
-            print(f"Bearbetar: {f.name}")
+            print(f"Processing: {f.name}")
             df = pd.read_json(f, lines=True)
 
-            # Lista för att hålla alla chunks för filen
+            # List to hold all chunks for the file
             chunked_records = []
 
-            # Loopa igenom varje rad och skapa chunks
+            # Loop through each row and create chunks
             for _, row in df.iterrows():
                 original_text = row.get("text", "")
 
@@ -64,7 +64,7 @@ def ingest_db():
 
                 chunks = splitter.split_text(original_text)
 
-                # För varje chunk, skapa ett nytt objekt att lägga till i databasen
+                # For each chunk, create a new object to add to the database
                 for index, chunk_text in enumerate(chunks):
                     record = {
                         "filename": row.get("filename", f.name),
@@ -80,9 +80,9 @@ def ingest_db():
             if chunked_records:
                 table.add(chunked_records)
                 total_chunks += len(chunked_records)
-                print(f"Skapade {len(chunked_records)} chunks från filen {f.name}.")
+                print(f"Created {len(chunked_records)} chunks from file {f.name}.")
 
-        print(f"Klar! Tabell '{country}' uppdaterad med {total_chunks} chunks.")
+        print(f"Done! Table '{country}' updated with {total_chunks} chunks.")
 
 
 if __name__ == "__main__":

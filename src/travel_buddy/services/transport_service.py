@@ -131,7 +131,7 @@ class TransportService:
         options.append(TransportOption(
             mode="bus",
             route_name="Airports Limousine Bus",
-            duration_minutes=bus_fare,
+            duration_minutes=bus_time,
             price_jpy=bus_fare,
             distance_km=distance_km,
             instructions=f"Direct airport bus service. Approx {bus_time} minutes."
