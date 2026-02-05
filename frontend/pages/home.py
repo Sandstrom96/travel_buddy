@@ -1,10 +1,6 @@
 """Home page."""
-# Senaste ändringen här i home.py är gjord med gemini pro
 import streamlit as st
-import os
-from dotenv import load_dotenv
-
-load_dotenv()
+from frontend_utils.api_client import BACKEND_URL
 
 def main():
     # --- HERO SEKTION ---
@@ -38,7 +34,8 @@ def main():
     st.subheader("Vart vill du resa?")
     
     col_left, col_right = st.columns(2)
-        # Grekland Section
+    
+    # Grekland Section
     with col_left:
         with st.container(border=True):
             st.header("🇬🇷 Grekland")
@@ -48,7 +45,6 @@ def main():
                 Grekland är det perfekta valet för både historieälskare och soldyrkare.
             """)
             if st.button("Utforska Grekland", use_container_width=True, type="primary"):
-                # Samma här som ovan
                 st.session_state.selected_country = "Greece"
                 st.session_state.messages = []
                 st.session_state.agent_history = []
@@ -64,17 +60,15 @@ def main():
                 Upplev världens bästa mat, snabba tåg och enastående natur.
             """)
             if st.button("Utforska Japan", use_container_width=True, type="primary"):
-                # Spara valet i session_state och nollställ chatten för Japan
                 st.session_state.selected_country = "Japan"
                 st.session_state.messages = []
                 st.session_state.agent_history = []
                 st.switch_page("pages/agent_chat.py")
 
-
     st.info("Fler destinationer kommer snart!")
     st.divider()
 
-
+    # --- FOOTER ---
     c1, c2, c3 = st.columns(3)
     with c1:
         st.caption("🤖 **Modell:** Gemini Pro Powered")
