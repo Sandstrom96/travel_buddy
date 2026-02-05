@@ -2,21 +2,20 @@ FROM python:3.13-slim
 
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
-ENV UV_PROJECT_ENVIRONMENT="/venv"
-
-ENV PATH="$UV_PROJECT_ENVIRONMENT/bin:$PATH"
-
 WORKDIR /app
 
+ENV UV_LINK_MODE=copy
+
+RUN --mount=type=cache,target=/root/.cache/uv \
+    --mount=type=bind,source=uv.lock,target=uv.lock \
+    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
+    uv sync --frozen --no-dev --extra backend --no-install-project
+
 COPY pyproject.toml uv.lock ./
+COPY src/ ./src/
 
-RUN uv sync --no-install-project --extra backend
-
-COPY . .
-
-# Install the project in editable mode inside the uv environment so travel_buddy can be imported
-RUN uv pip install -e .[backend]
+RUN uv sync --frozen --no-dev --extra backend
 
 EXPOSE 8000
 
-CMD ["uvicorn", "travel_buddy.api.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uv", "run", "uvicorn", "travel_buddy.main:app", "--host", "0.0.0.0", "--port", "8000"]
