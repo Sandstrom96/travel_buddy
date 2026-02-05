@@ -107,3 +107,59 @@ class TransportService:
             extra_km = distance_km - 1.7
             extra_fare = int(extra_km * 4) * TransportService.TAXI_PER_KM # Per 250m
             return TransportService.TAXI_BASE_FARE + extra_fare
+        
+    
+    @staticmethod
+    def get_airport_transport(distance_km: float) -> list:
+        from travel_buddy.schemas.recommendation import TransportOption
+
+        options = []
+
+        train_fare = TransportService.get_train_fare(distance_km)
+        train_time = int(distance_km * 1.5)
+        options.append(TransportOption(
+            mode="train",
+            route_name="JR Express / Airport Train",
+            duration_minutes = train_time,
+            price_jpy=train_fare,
+            distance_km=distance_km,
+            instructions=f"Take JR or airport express train. Approx {train_time} minutes."
+        ))
+
+        bus_fare = 1500 if distance_km < 30 else 2000
+        bus_time = int(distance_km * 2)
+        options.append(TransportOption(
+            mode="bus",
+            route_name="Airports Limousine Bus",
+            duration_minutes=bus_fare,
+            price_jpy=bus_fare,
+            distance_km=distance_km,
+            instructions=f"Direct airport bus service. Approx {bus_time} minutes."
+        ))
+
+        
+        taxi_fare= TransportService.TAXI_BASE_FARE + int(distance_km * TransportService.TAXI_PER_KM * 4)
+        taxi_time = int(distance_km * 1.2)
+        options.append(TransportOption(
+            mode="taxi",
+            route_name="Taxi",
+            duration_minutes=taxi_time,
+            price_jpy=taxi_fare,
+            distance_km=distance_km,
+            instructions=f"Private taxi. Approx {taxi_time} minutes. Expensive for long distances."
+        ))
+
+        return options
+
+    @staticmethod
+    def get_train_fare(distance_km: float) -> int:
+        if distance_km < 20:
+            return 500
+        elif distance_km < 40:
+            return 1000
+        elif distance_km < 60:
+            return 1500
+        elif distance_km < 80:
+            return 2500
+        else: 
+            return 3500
