@@ -8,20 +8,23 @@ load_dotenv()
 BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000").rstrip('/')
 
 def fetch_destinations():
+    backend_url = os.environ.get("BACKEND_URL", "http://localhost:8000")
     try:
+        response = requests.get(f"{backend_url}/destinations", timeout=10)
         url = f"{BACKEND_URL}/destinations"
         response =requests.get(url, timeout=10)
 
         if response.status_code == 200:
             return response.json().get("destinations", [])
         else:
-            st.error(f"Servern svarade med statuskod: {response.status_code}")
+            st.warning(f"Kunde inte hämta destinationer (statuskod: {response.status_code})")
             return []
     except requests.exceptions.ConnectionError:
+        st.warning("Backend är inte tillgänglig just nu. Starta servern för att se destinationer.")
         st.error(f"Kunde inte ansluta till backend på {BACKEND_URL}. Är servern igång?")
         return []
     except Exception as e:
-        st.error(f"Ett okänt fel uppstod: {e}")
+        st.warning(f"Ett fel uppstod: {e}")
         return []
 
 def main():
