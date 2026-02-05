@@ -9,7 +9,8 @@ dependencies = [
     "pydantic-ai",
     "python-dotenv>=1.2.1",
     "setuptools>=80.10.2",
-    "ipykernel>=7.1.0"
+    "ipykernel>=7.1.0",
+    "pydantic-ai-slim[tavily]>=0.8.1",
 ]
 
 [project.optional-dependencies]

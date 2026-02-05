@@ -12,6 +12,10 @@ def get_rag_service():
     if rag_service is None:
         rag_service = RAGService()
     return rag_service
+from typing import Optional, List, Any
+from pydantic_ai.messages import ModelMessagesTypeAdapter
+
+router = APIRouter()
 
 
 class ChatRequest(BaseModel):
@@ -49,6 +53,8 @@ async def chat(request: ChatRequest):
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
     
+    country: str
+    history: Optional[List[Any]] = []
 
 @router.get("/")
 async def agent_info():
@@ -64,3 +70,13 @@ async def agent_info():
         ]
     }
 
+@router.post("/chat")
+async def agent_chat(request: ChatRequest):
+    agent = TravelBuddyAgent(country=request.country)
+
+    validated_history = None
+    if request.history:
+        validated_history = ModelMessagesTypeAdapter.validate_python(request.history)
+
+    result = await agent.ask(user_query=request.message, history=validated_history)
+    return result
