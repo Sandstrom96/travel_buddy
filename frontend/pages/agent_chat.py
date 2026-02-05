@@ -2,10 +2,25 @@
 import streamlit as st
 from frontend_utils.api_client import send_chat_message
 
+def reset_chat():
+    """Rensar chatten när man byter land manuellt i menyn."""
+    st.session_state.messages = []
+    st.session_state.agent_history = []
 
 def main():
     st.title("Travel Guide Chat")
+<<<<<<< Updated upstream
     st.write("Planera din nästa resa med vår AI-Expert!")
+=======
+    if "selected_country" not in st.session_state:
+        st.session_state.selected_country = "Greece"
+        
+    selected_country = st.selectbox(
+        "Välj destination:",
+        ["Greece", "Japan"],
+        key = "selected_country",
+        on_change=reset_chat)
+>>>>>>> Stashed changes
 
     if "messages" not in st.session_state:
         st.session_state.messages = []
