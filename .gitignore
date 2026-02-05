@@ -1,7 +1,3 @@
-# Projekt-specifik data
-data/
-*.jsonl
-*.lance/
 .env
 
 # Byte-compiled / optimized / DLL files

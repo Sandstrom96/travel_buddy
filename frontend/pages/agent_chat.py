@@ -5,10 +5,13 @@ from frontend_utils.api_client import send_chat_message
 
 def main():
     st.title("Travel Guide Chat")
-    st.write("Planera din nästa resa med vår AI-Expert!")
+    selected_country = st.selectbox("Välj destination:", ["Greece", "Japan"])
 
     if "messages" not in st.session_state:
-        st.session_state.messages = []
+        st.session_state.messages = [] # för ui
+
+    if "agent_history" not in st.session_state:
+        st.session_state.agent_history = [] # för api-logikk
 
     for message in st.session_state.messages:
         with st.chat_message(message["role"]):
@@ -21,7 +24,14 @@ def main():
 
         with st.chat_message("assistant"):
             with st.spinner("Tänker så det knakar!!"):
-                ai_response = send_chat_message(prompt)
+                result = send_chat_message(
+                    query = prompt,
+                    country = selected_country,
+                    history = st.session_state.agent_history,
+                    )
+                ai_response = result.get("response", "Inget svar från AI-hjärnan.")
+                st.session_state.agent_history = result.get("history",[])
+
                 st.markdown(ai_response)
         st.session_state.messages.append({"role": "assistant", "content": ai_response})
 

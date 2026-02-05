@@ -23,6 +23,7 @@ services:
       - .:/app # Gemini till nedan.
     environment:
       - WATCHFILES_FORCE_POLLING=True # Gemini hjälpte till med detta! Detta gör så att den känner av ändringar i koden och startar om servern automatiskt när man kör i Docker på Windows.
+      - PYTHONPATH=/app/src
   frontend:
     build:
       context: .

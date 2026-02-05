@@ -19,10 +19,11 @@ agent_page = st.Page(
     title="Chat",
     icon="💬"
 )
+rec_page = st.Page("pages/recommendations.py", title="Karta & Rekommendationer", icon="📍")
 
 pg = st.navigation(
     {
-        "Meny": [home_page, agent_page]
+        "Meny": [home_page, agent_page, rec_page]
     }
 )
 
