@@ -1,5 +1,4 @@
 import requests
-import os
 from frontend_utils.settings import settings
 
 BACKEND_URL = settings.BACKEND_URL
@@ -51,7 +50,7 @@ def get_backend_health():
 def send_chat_message(query: str, country: str, history: list = None):
 
     payload = {
-        "query": query,
+        "message": query,
         "country": country.lower(),
         "history": history or [],
     }

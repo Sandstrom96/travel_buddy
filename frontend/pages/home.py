@@ -1,79 +1,81 @@
 """Home page."""
-
 import streamlit as st
-import requests
-from frontend_utils.settings import settings
-
-BACKEND_URL = settings.BACKEND_URL
-
-
-def fetch_destinations():
-
-    try:
-        response = requests.get(f"{BACKEND_URL}/destinations", timeout=10)
-        url = f"{BACKEND_URL}/destinations"
-        response = requests.get(url, timeout=10)
-
-        if response.status_code == 200:
-            return response.json().get("destinations", [])
-        else:
-            st.warning(
-                f"Kunde inte hämta destinationer (statuskod: {response.status_code})"
-            )
-            return []
-    except requests.exceptions.ConnectionError:
-        st.warning(
-            "Backend är inte tillgänglig just nu. Starta servern för att se destinationer."
-        )
-        st.error(f"Kunde inte ansluta till backend på {BACKEND_URL}. Är servern igång?")
-        return []
-    except Exception as e:
-        st.warning(f"Ett fel uppstod: {e}")
-        return []
-
+from frontend_utils.api_client import BACKEND_URL
 
 def main():
-    st.title("🌍 Upptäck Världen med Travel Buddy")
-    st.markdown(
-        """
-        Välkommen! Här hittar du handplockade destinationer för ditt nästa äventyr. 
-        Välj ett land i menyn till vänster för att börja chatta med din personliga guide.
-    """
-    )
+    # --- HERO SEKTION ---
+    st.markdown("""
+        <div style="text-align: center; padding: 2rem 0rem;">
+            <h1 style="font-size: 3rem;">🌍 Travel Buddy</h1>
+            <p style="font-size: 1.3rem; color: #555;">
+                Din intelligenta reskamrat som hjälper dig att planera, utforska och upptäcka 
+                världens mest fascinerande platser med hjälp av AI.
+            </p>
+        </div>
+    """, unsafe_allow_html=True)
+
     st.divider()
 
-    destinations = fetch_destinations()
+    # --- VAD GÖR APPEN? ---
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.subheader("🤖 AI-Guide")
+        st.write("Ställ frågor om kultur, mat och praktiska tips direkt till vår expert.")
+    with col2:
+        st.subheader("📍 Upptäck")
+        st.write("Hitta noga utvalda sevärdheter och dolda pärlor i våra favoritländer.")
+    with col3:
+        st.subheader("🗺️ Planera")
+        st.write("Få personliga rekommendationer skräddarsydda efter din resestil.")
 
-    if not destinations:
-        st.info("Hittade inga sparade destinationer. Har du kört din ingestion?")
-        return
+    st.divider()
 
-    cols = st.columns(2)
-    for idx, desti in enumerate(destinations):
+    # --- DESTINATIONER (Grekland & Japan) ---
+    st.subheader("Vart vill du resa?")
+    
+    col_left, col_right = st.columns(2)
+    
+    # Grekland Section
+    with col_left:
+        with st.container(border=True):
+            st.header("🇬🇷 Grekland")
+            st.write("""
+                Välkommen till civilisationens vagga. Njut av kristallblått vatten, 
+                vitkalkade hus i Kykladerna och historiska skatter i Aten. 
+                Grekland är det perfekta valet för både historieälskare och soldyrkare.
+            """)
+            if st.button("Utforska Grekland", use_container_width=True, type="primary"):
+                st.session_state.selected_country = "Greece"
+                st.session_state.messages = []
+                st.session_state.agent_history = []
+                st.switch_page("pages/agent_chat.py")
 
-        with cols[idx % 2]:
-            with st.container(border=True):
-                name = desti.get("name", "Okänd plats")
-                country = desti.get("country", "")
-                region = desti.get("region", "")
-                desc = desti.get("description", "Ingen beskrivning tillgänglig.")
+    # Japan Section
+    with col_right:
+        with st.container(border=True):
+            st.header("🇯🇵 Japan")
+            st.write("""
+                Från de neonljusa gatorna i Tokyo till Kyotos fridfulla tempel. 
+                Japan erbjuder en unik blandning av futuristisk teknik och uråldrig tradition. 
+                Upplev världens bästa mat, snabba tåg och enastående natur.
+            """)
+            if st.button("Utforska Japan", use_container_width=True, type="primary"):
+                st.session_state.selected_country = "Japan"
+                st.session_state.messages = []
+                st.session_state.agent_history = []
+                st.switch_page("pages/agent_chat.py")
 
-                location_icon = "📍"
-                st.subheader(f"{name}")
-                st.caption(
-                    f"{location_icon} {country}{f' • {region}' if region else ''}"
-                )
+    st.info("Fler destinationer kommer snart!")
+    st.divider()
 
-                short_desc = (desc[:120] + "...") if len(desc) > 120 else desc
-                st.write(short_desc)
-
-                st.button(
-                    "Utforska resmål",
-                    key=f"btn_{desti.get('id', idx)}",
-                    use_container_width=True,
-                    type="secondary",
-                )
-
+    # --- FOOTER ---
+    c1, c2, c3 = st.columns(3)
+    with c1:
+        st.caption("🤖 **Modell:** Gemini Pro Powered")
+    with c2:
+        st.caption("⚡ **Svarstid:** < 5s")
+    with c3:
+        st.caption("📅 **Uppdaterad:** 2026")
 
 if __name__ == "__main__":
     main()

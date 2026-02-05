@@ -2,7 +2,6 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import Field
 from pathlib import Path
 
-
 class Settings(BaseSettings):
     GOOGLE_API_KEY: str
     TAVILY_API_KEY: str
@@ -26,12 +25,11 @@ class Settings(BaseSettings):
     )
 
     # 'extra="ignore"' tillåter att .env-filen innehåller variabler som inte används
-    # av just denna klass (t.ex. inställningar för frontenden) utan att appen kraschar.
+    # av just denna klass utan att appen kraschar.
     model_config = SettingsConfigDict(
         env_file=".env",
         env_ignore_empty=True,
         extra="ignore",
     )
-
 
 settings = Settings()

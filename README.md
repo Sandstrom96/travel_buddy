@@ -74,7 +74,6 @@ curl http://localhost:8000/health
 ### 4) Starta frontend (Streamlit):
 ```bash
 uv run streamlit run frontend/app.py
-uv run streamlit run frontend/app.py
 ```
 *OBS: Vi kör app.py och inte home.py flr att få med navigationsmenyn*
 
