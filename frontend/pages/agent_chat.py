@@ -1,6 +1,7 @@
 import streamlit as st
 import requests
 import pandas as pd
+from frontend_utils.settings import settings
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
@@ -37,7 +38,7 @@ with side_col:
     with st.container(border=True):
 
         try:
-            response = requests.get(f"http://localhost:8000/weather/{city}")
+            response = requests.get(f"{settings.BACKEND_URL}/weather/{city}")
 
             if response.status_code == 200:
                 weather_data = response.json()
@@ -74,7 +75,7 @@ with side_col:
             st.error("Weather API connection failed.")
 
     try:
-        response = requests.get(f"http://localhost:8000/weather/location/{city}")
+        response = requests.get(f"{settings.BACKEND_URL}/weather/location/{city}")
 
         with st.container(border=True):
             if response.status_code == 200:
@@ -113,7 +114,7 @@ if user_input := st.chat_input("Your Question:"):
 
             with st.spinner("Searching..."):
                 response = requests.post(
-                    "http://localhost:8000/agent/chat", json=payload
+                    f"{settings.BACKEND_URL}/agent/chat", json=payload
                 )
 
             if response.status_code == 200:
