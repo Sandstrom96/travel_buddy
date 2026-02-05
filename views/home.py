@@ -51,5 +51,3 @@ def main():
                 st.write("")
                 st.button("Utforska", key=f"btn_{desti.get('id')}", use_container_width=True)
 
-if __name__ == "__main__":
-    main()
