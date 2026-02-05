@@ -4,8 +4,6 @@ from travel_buddy.db.models import Country
 from travel_buddy.agents.models import RagResponse
 from pydantic_ai.common_tools.tavily import tavily_search_tool
 from travel_buddy.utils.settings import settings
-import os
-
 
 class TravelBuddyAgent:
     def __init__(self, country: str):
@@ -13,11 +11,9 @@ class TravelBuddyAgent:
         self.table = db.open_table(country.lower())
         self.country_name = country
 
-        os.environ["GOOGLE_API_KEY"] = settings.GOOGLE_API_KEY
         tavily = tavily_search_tool(api_key=settings.TAVILY_API_KEY)
 
         self.agent = Agent(
-
             model="google-gla:gemini-2.5-flash", 
             output_type=RagResponse,
             tools=[tavily],  # for websearch

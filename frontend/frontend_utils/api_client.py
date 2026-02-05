@@ -1,7 +1,7 @@
 import requests
-import os
+from frontend_utils.settings import settings
 
-BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000")
+BACKEND_URL = settings.BACKEND_URL
 
 
 class APIClient:
