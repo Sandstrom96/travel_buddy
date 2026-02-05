@@ -9,6 +9,12 @@ class Settings(BaseSettings):
 
     BACKEND_URL: str = "http://localhost:8000"
 
+    BASE_DIR = Path(__file__).parents[3]
+
+    RAW_DATA_DIR: Path = Field(
+        default_factory=lambda: Path(__file__).parents[3] / "data" / "raw"
+    )
+
     PROCESSED_DATA_DIR: Path = Field(
         default_factory=lambda: Path(__file__).parents[3] / "data" / "processed"
     )
@@ -19,16 +25,13 @@ class Settings(BaseSettings):
         / "knowledge_base"
     )
 
-    # 'extra="ignore"' tillåter att .env-filen innehåller variabler som inte används 
+    # 'extra="ignore"' tillåter att .env-filen innehåller variabler som inte används
     # av just denna klass (t.ex. inställningar för frontenden) utan att appen kraschar.
     model_config = SettingsConfigDict(
-        env_file=".env", 
+        env_file=".env",
         env_ignore_empty=True,
         extra="ignore",
     )
 
 
 settings = Settings()
-
-if __name__ == "__main__":
-    print(settings.model_dump())
