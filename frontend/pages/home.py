@@ -1,20 +1,22 @@
 """Home page."""
 import streamlit as st
 import requests
+import os
 
 def fetch_destinations():
+    backend_url = os.environ.get("BACKEND_URL", "http://localhost:8000")
     try:
-        response =requests.get("http://backend:8000/destinations", timeout=10)
+        response = requests.get(f"{backend_url}/destinations", timeout=10)
         if response.status_code == 200:
             return response.json().get("destinations", [])
         else:
-            st.error(f"Servern svarade med statuskod: {response.status_code}")
+            st.warning(f"Kunde inte hämta destinationer (statuskod: {response.status_code})")
             return []
     except requests.exceptions.ConnectionError:
-        st.error("Kunde inte ansluta till backend. är servern igång?")
+        st.warning("Backend är inte tillgänglig just nu. Starta servern för att se destinationer.")
         return []
     except Exception as e:
-        st.error(f"Ett okänt fel uppstod: {e}")
+        st.warning(f"Ett fel uppstod: {e}")
         return []
 
 def main():
