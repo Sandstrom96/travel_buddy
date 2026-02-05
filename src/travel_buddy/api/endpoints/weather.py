@@ -13,3 +13,9 @@ async def get_weather(city: str):
         latitude=location["lat"], longitude=location["lon"]
     )
     return weather
+
+
+@router.get("/location/{city}")
+async def get_location(city: str):
+    location = await WeatherService.get_location_coordinates(city=city)
+    return location
