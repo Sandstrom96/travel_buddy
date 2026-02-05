@@ -1,11 +1,11 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from travel_buddy.api.router import router
+from travel_buddy.api.router import router as main_router
 
 app = FastAPI(
     title="Travel Buddy API",
-    description="AI-powered travel guide for Japan",
-    version="0.1.0"
+    description="AI-powered travel guide",
+    version="0.1.0",
 )
 
 app.add_middleware(
@@ -16,14 +16,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(router)
+app.include_router(main_router)
 
 
 @app.get("/")
 async def root():
     """Root endpoint with API information."""
     return {
-        "message": "Welcome to Travel Buddy API",
+        "message": "Konnichiwa! Welcome to the Travel Buddy Japan API.",
         "docs": "/docs",
-        "health": "/health"
     }
