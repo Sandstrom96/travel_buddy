@@ -1,6 +1,6 @@
 import requests
 import os
-from settings import settings
+from frontend_utils.settings import settings
 
 BACKEND_URL = settings.BACKEND_URL
 
