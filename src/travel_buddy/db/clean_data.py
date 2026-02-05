@@ -1,10 +1,6 @@
 import re
-from pathlib import Path
 import json
-
-BASE_DIR = Path(__file__).parents[3]
-RAW_DATA_DIR = BASE_DIR / "data" / "raw"
-PROCESSED_DATA_DIR = BASE_DIR / "data" / "processed"
+from travel_buddy.utils.settings import settings
 
 
 ## Tog hjälp av AI för att skapa detta
@@ -40,11 +36,11 @@ def clean_markdown_content(raw_text):
         "### Did this information help you",
         "### Thank you for your feedback",
         "## Near",
-        #specifika nyckelord för grekland-data
+        # specifika nyckelord för grekland-data
         "###### CONTENTS",
         "_The artwork on the cover",
         "Follow us on",
-        "Newsletter"
+        "Newsletter",
     ]
 
     # Regex för att hitta rubriker som faktiskt är innehåll
@@ -141,10 +137,10 @@ def determine_category(url_or_filename):
 
 
 def process_all_folders():
-    countries = [f for f in RAW_DATA_DIR.iterdir() if f.is_dir()]
+    countries = [f for f in settings.RAW_DATA_DIR.iterdir() if f.is_dir()]
 
     if not countries:
-        print(f"Varning: Hittade inga länder i {RAW_DATA_DIR}")
+        print(f"Varning: Hittade inga länder i {settings.RAW_DATA_DIR}")
         return
 
     total_files_processed = 0
@@ -226,7 +222,7 @@ def process_file_list(files, country_name, region_name):
     if processed_entries:
         # Om regionen är "General", döp filen till t.ex. "japan_general.jsonl"
         output_filename = f"{country_name}_{region_name.lower()}.jsonl"
-        output_file = PROCESSED_DATA_DIR / output_filename
+        output_file = settings.PROCESSED_DATA_DIR / output_filename
 
         with open(output_file, "w", encoding="utf-8") as f:
             for entry in processed_entries:
