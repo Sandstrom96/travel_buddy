@@ -15,5 +15,7 @@ router.include_router(
 )
 router.include_router(guide.router, prefix="/guide", tags=["guide"])
 router.include_router(agent.router, prefix="/agent", tags=["agent"])
-router.include_router(recommendations.router, prefix="/recommendations")
+router.include_router(
+    recommendations.router, prefix="/recommendations", tags=["recommendations"]
+)
 router.include_router(weather.router, prefix="/weather", tags=["weather"])
