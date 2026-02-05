@@ -1,44 +1,23 @@
 import streamlit as st
 from frontend_utils.api_client import get_backend_health
 
-st.set_page_config(
-    page_title="Travel Buddy",
-    page_icon="✈️",
-    layout="wide",
-)
-
-home_page = st.Page(
-    "pages/home.py",
-    title="Hem",
-    icon="🏠",
-    default=True
-)
-
-agent_page = st.Page(
-    "pages/agent_chat.py",
-    title="Chat",
-    icon="💬"
-)
-rec_page = st.Page("pages/recommendations.py", title="Karta & Rekommendationer", icon="📍")
-
-pg = st.navigation(
-    {
-        "Meny": [home_page, agent_page, rec_page]
-    }
-)
+if "selected_country" not in st.session_state:
+    st.session_state.selected_country = "Japan"
 
 st.sidebar.title("Travel Buddy")
-st.sidebar.info ("Din personliga AI-guide")
+st.session_state.selected_country = st.sidebar.selectbox(
+    "Välj Land", ["Japan", "Greece"], index=0
+)
+
+home_page = st.Page("pages/home.py", title="Hem", icon="🏠", default=True)
+agent_page = st.Page("pages/agent_chat.py", title="Chat", icon="💬")
+rec_page = st.Page("pages/recommendations.py", title="Recommendations")
+
+
+pg = st.navigation([home_page, agent_page])
 
 st.sidebar.divider()
 st.sidebar.write("Systemstatus")
-
-health_status = get_backend_health()
-
-if health_status.get("status") == "healthy":
-    st.sidebar.success("Backend: Online")
-else:
-    st.sidebar.error(f"Backend: Offline - {health_status.get('detail')}")
 
 
 pg.run()
