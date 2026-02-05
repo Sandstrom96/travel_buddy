@@ -6,7 +6,7 @@ BACKEND_URL = os.environ.get("BACKEND_URL", "http://localhost:8000")
 
 
 class APIClient:
-    # To keep recommendations.py happy (not crashing).
+    # För att hålla recommendations.py nöjd(inte krascha).
     @staticmethod
     def get_health():
         try:
@@ -105,10 +105,10 @@ def send_chat_message(query: str, country: str, history: list = None):
             return response.json()
         else:
             return {
-                "response": f"The server responded with status code: {response.status_code}",
+                "response": f"Servern svarade med statuskod: {response.status_code}",
                 "history": history or [],
             }
     except Exception as e:
-        return {"response": f"An unknown error occurred: {e}", "history": history or []}
+        return {"response": f"Ett okänt fel uppstod: {e}", "history": history or []}
 
 
