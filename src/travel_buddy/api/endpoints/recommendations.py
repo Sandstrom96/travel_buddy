@@ -4,7 +4,7 @@ from travel_buddy.schemas.recommendation import ActivityRecommendation
 from travel_buddy.services.recommendation_service import RecommendationService
 
 
-router = APIRouter(prefix="/recommendations", tags=["recommendations"])
+router = APIRouter(tags=["recommendations"])
 
 
 class RecommendationRequest(BaseModel):

@@ -33,10 +33,14 @@ async def agent_chat( request:ChatRequest):
             if isinstance(msg, dict) and "parts" in msg:
                 new_parts = []
                 for part in msg["parts"]:
-
-                    if isinstance(part, dict) and part.get("part_kind") == "image-url":
-                        url = part.get("url", "")
-                        if not any(url.lower().endswith(ext) for ext in [".jpg", ".jpeg", ".png", ".webp"]):
+                    url = part.get("url") if isinstance(part, dict) else None
+                    if url and isinstance(url, str):
+                        # Kolla om det är en riktig bild
+                        base_url = url.split('?')[0].lower()
+                        is_real_image = any(base_url.endswith(ext) for ext in [".jpg", ".jpeg", ".png", ".webp"])
+                        
+                        # Om det inte är en bild men tolkas som en media-part:
+                        if not is_real_image and (part.get("part_kind") == "image-url" or "url" in part):
                             new_parts.append({"part_kind": "text", "content": f"Länk: {url}"})
                             continue
                     new_parts.append(part)
