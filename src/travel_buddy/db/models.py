@@ -21,6 +21,6 @@ class Country(LanceModel):
     chunk_index: int = Field(description="Index of the text chunk")
     text: str = embedding_model.SourceField()
 
-    # Här använder vi embedding_model.ndims() för att definiera vektorns dimensioner. vi skriver "# type:ignore" för att 
-    # undvika typfel i editorn då dimensionen beräknas dynamiskt.
+    # Here we use embedding_model.ndims() to define the vector dimensions. We write "# type:ignore" to 
+    # avoid type errors in the editor as the dimension is calculated dynamically.
     embedding: Vector(embedding_model.ndims()) = embedding_model.VectorField() # type: ignore

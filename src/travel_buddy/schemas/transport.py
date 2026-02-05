@@ -11,9 +11,9 @@ class Airport(BaseModel):
 
 
 class HotelArea(BaseModel):
-    code: str
     name: str
     latitude: float
+    longitude: float
     description: Optional[str] = None
 
 

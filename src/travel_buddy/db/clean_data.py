@@ -3,18 +3,18 @@ import json
 from travel_buddy.utils.settings import settings
 
 
-## Tog hjälp av AI för att skapa detta
+## Used AI to help create this
 def clean_markdown_content(raw_text):
     """
-    Rensar bort navigering, menyer och boilerplate från markdown.
+    Removes navigation, menus and boilerplate from markdown.
     """
     lines = raw_text.split("\n")
     cleaned_lines = []
 
-    # Flaggor för att veta om vi är inne i ett "skräp-block"
+    # Flag for knowing if we are in a "noise block"
     in_noise_block = False
 
-    # Nyckelord som indikerar start av stora navigeringsmenyer
+    # Keywords that indicate start of large navigation menus
     noise_start_markers = [
         "- Select Language",
         "- [Trade](",
@@ -36,66 +36,66 @@ def clean_markdown_content(raw_text):
         "### Did this information help you",
         "### Thank you for your feedback",
         "## Near",
-        # specifika nyckelord för grekland-data
+        # specific keywords for Greece data
         "###### CONTENTS",
         "_The artwork on the cover",
         "Follow us on",
         "Newsletter",
     ]
 
-    # Regex för att hitta rubriker som faktiskt är innehåll
+    # Regex to find headers that are actually content
     header_pattern = re.compile(r"^#+\s+")
 
     for line in lines:
         stripped_line = line.strip()
 
-        # Kolla om vi går in i ett känt skräpblock
+        # Check if we enter a known noise block
         if any(stripped_line.startswith(marker) for marker in noise_start_markers):
             in_noise_block = True
             continue
 
-        # Om vi ser en "riktig" rubrik (innehållet), kan vi ibland nollställa bruset
-        # (Detta är en heuristik: Om vi ser "# Hiroshima" är vi troligen i content)
+        # If we see a "real" header (the content), we can sometimes reset the noise
+        # (This is a heuristic: If we see "# Hiroshima" we are probably in content)
         if in_noise_block and header_pattern.match(stripped_line):
-            # Men vi vill inte återaktivera om det är sidfotsrubriker
+            # But we don't want to re-enable if it's footer links
             if (
                 "Related Links" not in stripped_line
                 and "Explore Nearby" not in stripped_line
             ):
                 in_noise_block = False
 
-        # Specifik rensning av de enorma listorna med länkar (Destinations, Things to Do etc)
-        # Dessa filer verkar ha enorma listor av länkar som inte är brödtext.
-        # Vi tar bort rader som BARA är en markdown-länk eller bild.
+        # Specific cleaning of the huge lists with links (Destinations, Things to Do etc)
+        # These files seem to have huge lists of links that are not body text.
+        # We remove lines that are ONLY a markdown link or image.
         is_only_link = re.match(r"^\s*-\s*\[.*?\]\(.*?\)\s*$", stripped_line)
         is_only_image = re.match(r"^\s*\[?!\[.*?\]\(.*?\).*", stripped_line)
 
         if in_noise_block:
             continue
 
-        # Hoppa över rader som bara är navigeringslänkar eller bilder utan kontext
+        # Skip lines that are only navigation links or images without context
         if is_only_link or is_only_image:
             continue
 
-        # Ta bort template-variabler (t.ex. ${v.title})
+        # Remove template variables (e.g. ${v.title})
         if "${" in stripped_line:
             continue
 
-        # Behåll raden om den har innehåll
+        # Keep the line if it has content
         if stripped_line:
             cleaned_lines.append(stripped_line)
 
-    # Slå ihop text och städa upp länk-syntax i brödtexten
+    # Join text and clean up link syntax in body text
     full_text = "\n".join(cleaned_lines)
 
-    # Ta bort bilder men behåll eventuell alt-text om den är vettig, annars ta bort
+    # Remove images but keep any alt-text if it's sensible, otherwise remove
     # Regex: ![alt text](url) -> alt text
     full_text = re.sub(r"!\[([^\]]*)\]\([^)]+\)", r"\1", full_text)
 
-    # Ta bort vanliga länkar men behåll texten: [text](url) -> text
+    # Remove regular links but keep the text: [text](url) -> text
     full_text = re.sub(r"\[([^\]]+)\]\([^)]+\)", r"\1", full_text)
 
-    # Ta bort överflödiga nya rader (mer än 2)
+    # Remove excessive new lines (more than 2)
     full_text = re.sub(r"\n{3,}", "\n\n", full_text)
 
     return full_text.strip()
@@ -103,10 +103,10 @@ def clean_markdown_content(raw_text):
 
 def extract_frontmatter(text):
     """
-    Extraherar URL och Title från YAML frontmatter om det finns.
+    Extracts URL and Title from YAML frontmatter if it exists.
     """
     metadata = {}
-    # Gjorde regexet mer tillåtande för mellanslag vid start
+    # Made the regex more permissive for whitespace at start
     match = re.search(r"^\s*---\s*\n(.*?)\n\s*---", text, re.DOTALL)
     if match:
         yaml_content = match.group(1)
@@ -122,14 +122,14 @@ def extract_frontmatter(text):
 
 
 def determine_category(url_or_filename):
-    """Gissar kategori baserat på URL eller filnamn."""
+    """Guesses category based on URL or filename."""
     s = url_or_filename.lower()
     if "destinations" in s:
         return "destination"
     elif "plan" in s or "guide" in s:
         return "practical_guide"
     elif "spot" in s:
-        return "spot"  # Specifika sevärdheter
+        return "spot"  # Specific attractions
     elif "news" in s:
         return "news"
     else:
@@ -140,39 +140,39 @@ def process_all_folders():
     countries = [f for f in settings.RAW_DATA_DIR.iterdir() if f.is_dir()]
 
     if not countries:
-        print(f"Varning: Hittade inga länder i {settings.RAW_DATA_DIR}")
+        print(f"Warning: No countries found in {settings.RAW_DATA_DIR}")
         return
 
     total_files_processed = 0
 
     for country_path in countries:
         country_name = country_path.name
-        print(f"--> Går in i land: {country_name}")
+        print(f"--> Entering country: {country_name}")
 
-        # --- STEG 1: Hantera filer direkt i landsmappen (t.ex. Visum, Allmän info) ---
-        # Dessa får regionnamnet "General"
+        # --- STEP 1: Handle files directly in country folder (e.g. Visa, General info) ---
+        # These get the region name "General"
         general_files = list(country_path.glob("*.md"))
 
         if general_files:
-            print(f"    --> Bearbetar {len(general_files)} allmänna filer (General)...")
+            print(f"    --> Processing {len(general_files)} general files (General)...")
             process_file_list(general_files, country_name, "General")
             total_files_processed += len(general_files)
 
-        # --- STEG 2: Hantera regioner (undermappar) ---
+        # --- STEP 2: Handle regions (subfolders) ---
         regions = [r for r in country_path.iterdir() if r.is_dir()]
 
         for region_path in regions:
             region_name = region_path.name
-            print(f"    --> Bearbetar region: {region_name}...")
+            print(f"    --> Processing region: {region_name}...")
 
             files = list(region_path.rglob("*.md"))
             process_file_list(files, country_name, region_name)
             total_files_processed += len(files)
 
-    print(f"\nKlar! Totalt {total_files_processed} filer behandlade.")
+    print(f"\nDone! Total {total_files_processed} files processed.")
 
 
-# --- Hjälpfunktion för att slippa upprepa koden ---
+# --- Helper function to avoid repeating code ---
 def process_file_list(files, country_name, region_name):
     processed_entries = []
 
@@ -183,18 +183,18 @@ def process_file_list(files, country_name, region_name):
 
             metadata, body_content = extract_frontmatter(raw_content)
 
-            # --- FIX 1: Hantera saknad URL ---
+            # --- FIX 1: Handle missing URL ---
             url = metadata.get("url")
             if not url:
-                # Om URL saknas i filen, bygg en från filnamnet
-                # t.ex. www.japan.travel_en_spot_895.md -> https://www.japan.travel/en/spot/895/
+                # If URL is missing in file, build one from filename
+                # e.g. www.japan.travel_en_spot_895.md -> https://www.japan.travel/en/spot/895/
                 url_part = file_path.stem.replace("_", "/")
                 url = f"https://{url_part}"
 
-            # --- FIX 2: Hantera titel ---
+            # --- FIX 2: Handle title ---
             raw_title = metadata.get("title")
             if not raw_title:
-                # Om titel saknas, använd filnamnet (utan .md) som nödlösning
+                # If title is missing, use filename (without .md) as fallback
                 clean_title = file_path.stem.split("_")[-1].capitalize()
             else:
                 clean_title = raw_title.split("|")[0].strip()
@@ -207,7 +207,7 @@ def process_file_list(files, country_name, region_name):
             entry = {
                 "filename": file_path.name,
                 "country": country_name,
-                "region": region_name,  # Här blir det "General" för visum-filerna
+                "region": region_name,  # Here it becomes "General" for visa files
                 "url": url,
                 "title": clean_title,
                 "category": determine_category(url),
@@ -216,11 +216,11 @@ def process_file_list(files, country_name, region_name):
             processed_entries.append(entry)
 
         except Exception as e:
-            print(f"       Fel vid fil {file_path.name}: {e}")
+            print(f"       Error in file {file_path.name}: {e}")
 
-    # Spara resultatet om vi hittade några filer
+    # Save result if we found any files
     if processed_entries:
-        # Om regionen är "General", döp filen till t.ex. "japan_general.jsonl"
+        # If region is "General", name the file e.g. "japan_general.jsonl"
         output_filename = f"{country_name}_{region_name.lower()}.jsonl"
         output_file = settings.PROCESSED_DATA_DIR / output_filename
 
@@ -229,7 +229,7 @@ def process_file_list(files, country_name, region_name):
                 f.write(json.dumps(entry, ensure_ascii=False) + "\n")
 
         print(
-            f"       Sparade {len(processed_entries)} artiklar till {output_filename}"
+            f"       Saved {len(processed_entries)} articles to {output_filename}"
         )
 
 
