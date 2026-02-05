@@ -17,7 +17,12 @@ st.set_page_config(layout="wide")
 
 st.title("Travel Buddy Chat")
 
-# Skapa kolumner 2 delar till vänster, 1 del till höger
+
+if "selected_destination" in st.session_state and st.session_state.selected_destination:
+    dest = st.session_state.selected_destination
+    st.info(f"🌍 Välkommen! Du utforskar nu **{dest['name']}** i {dest['country']}. Ask me anything!")
+    st.session_state.selected_destination = None
+
 chat_col, side_col = st.columns([2, 1])
 city = st.session_state.city
 

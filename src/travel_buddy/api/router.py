@@ -6,6 +6,7 @@ from travel_buddy.api.endpoints import (
     agent,
     recommendations,
     weather,
+    transport,
 )
 
 router = APIRouter()
@@ -19,3 +20,4 @@ router.include_router(
     recommendations.router, prefix="/recommendations", tags=["recommendations"]
 )
 router.include_router(weather.router, prefix="/weather", tags=["weather"])
+router.include_router(transport.router, prefix="/transport", tags=["transport"])
