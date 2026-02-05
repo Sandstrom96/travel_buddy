@@ -9,14 +9,17 @@ def reset_chat():
 
 def main():
     st.title("Travel Guide Chat")
-    if "selected_country" not in st.session_state:
-        st.session_state.selected_country = "Greece"
-        
-    selected_country = st.selectbox(
-        "Välj destination:",
-        ["Greece", "Japan"],
-        key = "selected_country",
-        on_change=reset_chat)
+    # flyttad till app.    
+    #selected_country = st.selectbox(
+    #    "Välj destination:",
+    #    ["Greece", "Japan"],
+    #    key = "selected_country",
+    #    on_change=reset_chat)
+
+    # Istället för ovan:-----------
+    selected_country = st.session_state.selected_country
+    st.subheader(f"Chatta om {selected_country}")
+    #------------------------------
 
     if "messages" not in st.session_state:
         st.session_state.messages = []

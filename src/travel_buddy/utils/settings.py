@@ -7,7 +7,7 @@ class Settings(BaseSettings):
     GOOGLE_API_KEY: str
     TAVILY_API_KEY: str
 
-    BACKEND_URL: str = "http://localhost:8000"
+    backend_url: str = "http://localhost:8000"
 
     PROCESSED_DATA_DIR: Path = Field(
         default_factory=lambda: Path(__file__).parents[3] / "data" / "processed"
