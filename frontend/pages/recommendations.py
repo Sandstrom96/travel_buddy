@@ -3,29 +3,38 @@ from frontend_utils.api_client import APIClient
 
 
 st.title("🍦 Activity Recommendations")
-st.markdown("Get personalized recommendations for ice cream, restaurants, cafes, and temples in Osaka!")
+st.markdown("Get personalized recommendations for ice cream, restaurants, cafes, and temples in Osaka, Tokyo, and Kyoto!")
 
 if "api_client" not in st.session_state:
     st.session_state.api_client = APIClient()
 
-st.subheader("📍 Choose  Location")
+st.subheader("📍 Choose Location")
 
+# Osaka buttons
 col1, col2, col3 = st.columns(3)
-
 with col1:
-    if st.button("📍 Dotonbori", use_container_width=True):
+    if st.button("📍 Dotonbori (Osaka)", use_container_width=True):
         st.session_state.user_lat = 34.6686
         st.session_state.user_lon = 135.5023
-
 with col2:
     if st.button("📍 Osaka Station", use_container_width=True):
         st.session_state.user_lat = 34.6618
         st.session_state.user_lon = 135.4959
-
 with col3:
-    if st.button("📍 Namba", use_container_width=True):
+    if st.button("📍 Namba (Osaka)", use_container_width=True):
         st.session_state.user_lat = 34.6618
         st.session_state.user_lon = 135.5012
+
+# Tokyo and Kyoto buttons
+col4, col5 = st.columns(2)
+with col4:
+    if st.button("📍 Tokyo Station", use_container_width=True):
+        st.session_state.user_lat = 35.6895
+        st.session_state.user_lon = 139.6917
+with col5:
+    if st.button("📍 Kyoto Station", use_container_width=True):
+        st.session_state.user_lat = 35.0116
+        st.session_state.user_lon = 135.7681
 
 # Manual coordinate input
 with st.expander(" Enter Custom Coordinates"):

@@ -7,6 +7,12 @@ from travel_buddy.services.weather_service import WeatherService
 class RecommendationService:
     """Orchestrate recommendations with places, transport, and weather."""
 
+    FALLBACK_CITIES = [
+        {"name": "Tokyo", "lat": 35.6895, "lon": 139.6917},
+        {"name": "Kyoto", "lat": 35.0116, "lon": 135.7681},
+        {"name": "Osaka", "lat": 34.6937, "lon": 135.5023}
+    ]
+
     @staticmethod
     async def get_activity_recommendations(
         user_lat: float,
@@ -25,9 +31,22 @@ class RecommendationService:
 
         if places:
             weather = await WeatherService.get_weather(places[0].latitude, places[0].longitude)
+            fallback_city = None
         else:
-            # Fallback to Osaka center
-            weather = await WeatherService.get_weather(34.6937, 135.5023)
+            # Fallback to city centers
+            for city in RecommendationService.FALLBACK_CITIES:
+                places = PlaceService.search_places(
+                    user_lat=city["lat"],
+                    user_lon=city["lon"],
+                    category=activity_type,
+                    max_results=max_results
+                )
+                if places:
+                    weather = await WeatherService.get_weather(city["lat"], city["lon"])
+                    fallback_city = city["name"]
+                    break
+            else:
+                return []
 
         recommendations = []
         for place in places:
@@ -51,6 +70,9 @@ class RecommendationService:
                 weather=weather,
                 cheapest_transport=transport_options[0] if transport_options else None
             )
+
+            if fallback_city:
+                reason = f"Recommended in {fallback_city} due to no options nearby. " + reason
 
             recommendation = ActivityRecommendation(
                 place=place,
@@ -110,6 +132,3 @@ class RecommendationService:
             reasons.append(f"¥{cheapest_transport.price_jpy} by {cheapest_transport.mode}")
 
         return ", ".join(reasons) if reasons else "Good option in your area"
-
-
-
