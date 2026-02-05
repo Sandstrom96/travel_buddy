@@ -4,14 +4,14 @@ from travel_buddy.schemas.recommendation import ActivityRecommendation
 from travel_buddy.services.recommendation_service import RecommendationService
 
 
-router = APIRouter(prefix="/recommendations", tags=["recommendations"])
+router = APIRouter(tags=["recommendations"])
 
 
 class RecommendationRequest(BaseModel):
     """Request for activity recommendations."""
     user_latitude: float = Field(..., ge=-90, le=90)
     user_longitude: float = Field(..., ge=-180, le=180)
-    activity_type: str = Field(default="ice cream", pattern="^(ice_cream|restaurant|cafe|temple)$")
+    activity_type: str = Field(default="ice_cream", pattern="^(ice_cream|restaurant|cafe|temple)$")
     max_results: int = Field(default=3, ge=1, le=10)
 
 

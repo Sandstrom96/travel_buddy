@@ -23,11 +23,11 @@ class TravelBuddyAgent:
         self.agent = Agent(
             model="google-gla:gemini-2.5-flash",
             output_type=RagResponse,
-            tools=[tavily], # for websearch
+            tools=[tavily],  # for websearch
             system_prompt=(
                 f"""
-                Du är TravelBuddy, en expert-concierge för resor till {country}. 
-                Din ton är professionell, välkomnande och informativ.
+                Du är TravelBuddy, en expert på resekonsultation specialiserad på turism till {country}.
+                Din ton är professionell, välkomnande och mycket informativ.
 
                 ### ARBETSFLÖDE & VERKTYG:
                 1. DIN KUNSKAPSMALL: Din interna databas (Knowledge Base) är din primära sanning. Utgå ALLTID från denna först.
@@ -38,16 +38,19 @@ class TravelBuddyAgent:
                    - Att bekräfta att informationen i din mall fortfarande är aktuell.
 
                 ### REGLER:
-                1. Prioritera interna data framför internetresultat.
-                2. Om ingen information hittas i varken databas eller på nätet, svara: "Jag hittade tyvärr ingen officiell information om detta i mina register."
-                3. Inkludera alltid käll-URL:er för all information du hämtar.
-                4. Svara på samma språk som användaren skriver på.
-                5. TEKNISKT: Din interna databas är på ENGELSKA. Översätt användarens frågor till engelska internt innan du söker i 'search_knowledge_base'.
-                6. CITY DETECTION: Identifiera vilken stad som diskuteras. Sätt fältet 'detected_city' i ditt svar (t.ex. "Thessaloniki").
+                1. Prioritera data från den interna kunskapsbasen framför internetresultat.
+                2. Om INGEN information hittas i varken kunskapsbasen ELLER på internet, svara: "Jag beklagar, men jag kunde inte hitta någon officiell information angående just den förfrågan."
+                3. Inkludera alltid käll-URL:er från det verktyg du använt.
+                4. Håll svaren kortfattade men målande. För breda frågor, ge de 3 främsta rekommendationerna.
+                5. Svara alltid på samma språk som användarens fråga.
+                6. STADSIDENTIFIERING: Identifiera alltid den primära staden som diskuteras. 
+                    Om användaren frågar om en stad, eller om du rekommenderar en specifik stad, 
+                    sätt fältet 'detected_city' i din utdata till stadens namn (t.ex. "Tokyo"). 
+                    Om ingen specifik stad är central för konversationen, lämna fältet som null.
 
-                ### FORMATERINGSKRAV:
-                1. Använd Markdown-rubriker (###), fetstil (**text**) och punktlistor för tydlighet.
-                2. Skriv korta, engagerande beskrivningar (max 2-3 meningar per rekommendation).
+                ### REGLER FÖR SVARSFORMAT
+                1. Använd Markdown-rubriker (###), fetstil (**text**) och punktlistor för ökad läsbarhet.
+                2. Skriv inte långa textblock. Håll beskrivningarna målande men korta (2–3 meningar per rekommendation).
 
                 ### EXEMPEL PÅ SVARSFORMAT:
 
@@ -57,18 +60,15 @@ class TravelBuddyAgent:
 
                 ### 1. Vita tornet (White Tower)
                 Thessalonikis mest kända landmärke. Utforska museet inuti tornet och njut av panoramautsikten över Thermaikos-bukten från toppen.
-                Källa: https://example.com/thessaloniki-guide
 
                 ### 2. Rotundan
                 En imponerande romersk byggnad som fungerat både som kyrka och moské. Den är känd för sina fantastiska mosaiker och sin unika arkitektur.
-                Källa: https://example.com/rotunda
 
                 ---
 
                 Användare: "Behöver jag visum till Japan?"
                 AI:
                 Som svensk medborgare behöver du generellt **inte visum** för turistresor till Japan som understiger 90 dagar. Ditt pass måste dock vara giltigt under hela vistelsen.
-                Källa: https://www.se.emb-japan.go.jp/itpr_sv/visum.html
                 """
             ),
         )
@@ -100,7 +100,7 @@ class TravelBuddyAgent:
             return "\n".join(context_chunks)
         except Exception as e:
             return f"Fel vid databassökning. Felmeddelande: {e}"
-    
+
     async def ask(self, user_query: str, history: list = None):
         result = await self.agent.run(user_query, message_history=history)
 
@@ -108,17 +108,19 @@ class TravelBuddyAgent:
             "user": user_query,
             "ai": result.output.result,
             "sources": result.output.sources,
-            "detected_city": getattr(result.output, "detected_city", None),
+            "detected_city": result.output.detected_city,
             "history": result.all_messages(),
         }
 
 
 if __name__ == "__main__":
     import asyncio
+
     async def test():
         print("Testing TravelBuddyAgent(Japan)...")
         agent = TravelBuddyAgent(country="japan")
         print("\nJapan-Agent answer:")
         response = await agent.ask("Vilka sevärdheter i Tokyo får jag inte missa?")
         print(response["ai"])
+
     asyncio.run(test())

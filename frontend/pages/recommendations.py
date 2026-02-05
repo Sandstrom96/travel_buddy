@@ -1,7 +1,9 @@
 import streamlit as st
 from frontend_utils.api_client import APIClient
 
-st.set_page_config(page_title="Recommendations - Travel Buddy", page_icon="🍦", layout="wide")
+# kommenterar bort denna då
+# st.set_page_config hämtas i app.py
+# st.set_page_config(page_title="Recommendations - Travel Buddy", page_icon="🍦", layout="wide")
 
 st.title("🍦 Activity Recommendations")
 st.markdown("Get personalized recommendations for ice cream, restaurants, cafes, and temples in Osaka!")
