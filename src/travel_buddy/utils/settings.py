@@ -9,7 +9,7 @@ class Settings(BaseSettings):
 
     BACKEND_URL: str = "http://localhost:8000"
 
-    BASE_DIR = Path(__file__).parents[3]
+    BASE_DIR: Path = Field(default_factory=lambda: Path(__file__).parents[3])
 
     RAW_DATA_DIR: Path = Field(
         default_factory=lambda: Path(__file__).parents[3] / "data" / "raw"
