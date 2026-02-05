@@ -10,13 +10,12 @@ try:
 except ValueError:
     current_idx = 0
 
-selected = st.sidebar.selectbox(
+st.sidebar.selectbox(
     "Välj Land",
     options,
     index=current_idx,
     key="selected_country"
 )
-st.session_state.selected_country = selected
 
 home_page = st.Page("pages/home.py", title="Hem", icon="🏠", default=True)
 agent_page = st.Page("pages/agent_chat.py", title="Chat", icon="💬")
