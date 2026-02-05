@@ -29,3 +29,5 @@ scripts
 .env
 .vscode
 .idea
+
+**/knowledge_base/

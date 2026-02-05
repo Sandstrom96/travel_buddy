@@ -1,5 +1,6 @@
 import requests
 import os
+from frontend_utils.settings import settings
 
 
 BACKEND_URL = os.environ.get("BACKEND_URL", "http://localhost:8000")
