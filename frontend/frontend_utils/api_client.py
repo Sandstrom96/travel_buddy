@@ -1,30 +1,40 @@
 import requests
 import os
+from dotenv import load_dotenv
 
-BACKEND_URL = os.getenv("BACKEND_URL", "http://backend:8000")
+load_dotenv()
+BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000")
 
-def get_backend_health():
-    try:
-        response = requests.get(f"{BACKEND_URL}/health/", timeout=2)
-        if response.status_code == 200:
+class APIClient:
+    @staticmethod
+    def get_health():
+        try:
+            response = requests.get(f"{BACKEND_URL}/health/", timeout=2)
             return response.json()
-        return {"status": "unhealthy", "detail": "Non-200 response"}
-    except requests.RequestException as e:
-        return {"status": "unhealthy", "detail": str(e)}
-    
+        except:
+            return {"status": "offline"}
 
-def send_chat_message(query: str, thread_id: str = None):
-    
-    payload = {"query": query, "thread_id": thread_id}
+    @staticmethod
+    def get_recommendations(user_lat: float, user_lon: float, activity_type: str = "ice_cream", max_results: int = 5):
+        payload = {
+            "user_latitude": user_lat,
+            "user_longitude": user_lon,
+            "activity_type": activity_type,
+            "max_results": max_results
+        }
+        try:
+            response = requests.post(f"{BACKEND_URL}/recommendations/", json=payload, timeout=10)
+            return response.json() if response.status_code == 200 else []
+        except:
+            return []
 
+def send_chat_message(query: str, country: str, history: list = None):
+    payload = {"query": query, "country": country.lower(), "history": history or []}
     try:
         response = requests.post(f"{BACKEND_URL}/agent/chat", json=payload, timeout=30)
-
-        if response.status_code == 200:
-            return response.json().get("response", "Inget svar från AI-hjärnan.")
-        else:
-            return f"Servern svarade med statuskod: {response.status_code}"
-    except requests.exceptions.ConnectionError:
-        return "Kunde inte ansluta till backend. är servern igång?"
+        return response.json() if response.status_code == 200 else {"response": "Error", "history": history}
     except Exception as e:
-        return f"Ett okänt fel uppstod: {e}"
+        return {"response": str(e), "history": history}
+
+def get_backend_health():
+    return APIClient.get_health()
