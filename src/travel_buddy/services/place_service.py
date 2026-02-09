@@ -96,6 +96,79 @@ class PlaceService:
         
     ]
 
+    # Mock ice cream shops in Kyoto
+    KYOTO_ICE_CREAM_SHOPS = [
+        {
+            "id": "kyoto_gelato_1",
+            "name": "Kyoto Gelato House",
+            "address": "123 Kyoto St, Kyoto",
+            "latitude": 35.0116,
+            "longitude": 135.7681,
+            "category": "ice_cream",
+            "rating": 4.4,
+            "price_level": 2,
+            "menu_items": [
+                "Matcha Gelato (¥450)",
+                "Sakura Gelato (¥450)",
+                "Yuzu Sorbet (¥420)"
+            ],
+            "description": "Traditional Kyoto flavors in gelato form"
+        },
+        {
+            "id": "kyoto_softcream_1",
+            "name": "Kyoto Soft Cream Parlor",
+            "address": "456 Kyoto Ave, Kyoto",
+            "latitude": 35.0120,
+            "longitude": 135.7690,
+            "category": "ice_cream",
+            "rating": 4.2,
+            "price_level": 2,
+            "menu_items": [
+                "Green Tea Soft Cream (¥500)",
+                "Strawberry Soft Cream (¥520)"
+            ],
+            "description": "Soft serve with Kyoto-inspired toppings"
+        }
+    ]
+
+    # Mock ice cream shops in Tokyo
+    TOKYO_ICE_CREAM_SHOPS = [
+        {
+            "id": "tokyo_gelato_1",
+            "name": "Tokyo Gelato Delight",
+            "address": "789 Tokyo Blvd, Tokyo",
+            "latitude": 35.6895,
+            "longitude": 139.6917,
+            "category": "ice_cream",
+            "rating": 4.6,
+            "price_level": 2,
+            "menu_items": [
+                "Sesame Gelato (¥460)",
+                "Black Sesame Ice Cream (¥480)",
+                "Wasabi Sorbet (¥430)"
+            ],
+            "description": "Unique Tokyo flavors in artisanal gelato"
+        },
+        {
+            "id": "tokyo_parlor_1",
+            "name": "Tokyo Ice Cream Parlor",
+            "address": "101 Tokyo Plaza, Tokyo",
+            "latitude": 35.6900,
+            "longitude": 139.6920,
+            "category": "ice_cream",
+            "rating": 4.3,
+            "price_level": 3,
+            "menu_items": [
+                "Luxury Sundae (¥850)",
+                "Matcha Parfait (¥750)",
+                "Fruit Sorbet Bowl (¥680)"
+            ],
+            "description": "Premium ice cream experience in central Tokyo"
+        }
+    ]
+
+    ALL_ICE_CREAM_SHOPS = OSAKA_ICE_CREAM_SHOPS + KYOTO_ICE_CREAM_SHOPS + TOKYO_ICE_CREAM_SHOPS
+
     @staticmethod
     def search_places(
         user_lat: float,
@@ -108,7 +181,7 @@ class PlaceService:
         
 
         # Filtering by category and calculate distance
-        for shop_data in PlaceService.OSAKA_ICE_CREAM_SHOPS:
+        for shop_data in PlaceService.ALL_ICE_CREAM_SHOPS:
             if shop_data["category"] != category:
                 continue
 
@@ -133,7 +206,7 @@ class PlaceService:
     @staticmethod
     def get_place_by_id(place_id: str) -> Place | None:
         """Get a specific place by ID."""
-        for shop_data in PlaceService.OSAKA_ICE_CREAM_SHOPS:
+        for shop_data in PlaceService.ALL_ICE_CREAM_SHOPS:
             if shop_data["id"] == place_id:
                 return Place(**shop_data)
         return None

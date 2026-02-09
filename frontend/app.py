@@ -8,12 +8,17 @@ st.session_state.selected_country = st.sidebar.selectbox(
     "Välj Land", ["Japan", "Greece"], index=0
 )
 
-home_page = st.Page("pages/home.py", title="Hem", icon="🏠", default=True)
+home_page = st.Page("pages/home.py", title="Home", icon="🏠", default=True)
 agent_page = st.Page("pages/agent_chat.py", title="Chat", icon="💬")
 rec_page = st.Page("pages/recommendations.py", title="Recommendations", icon="📍")
+travel_page = st.Page(
+    "pages/traveling.py",
+    title="Travel",
+    icon="✈️"
+)
 
 
-pg = st.navigation([home_page, agent_page, rec_page])
+pg = st.navigation([home_page, agent_page, rec_page, travel_page])
 
 
 pg.run()
