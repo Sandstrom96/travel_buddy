@@ -27,6 +27,39 @@ This document lists external data sources, APIs, and algorithms used in the Trav
 
 ---
 
+### Streamlit
+- https://docs.streamlit.io/develop/api-reference 
+- https://docs.streamlit.io/develop/concepts/multipage-apps
+- st.set_page_config, st.title, st.columns, st.container, st.subheader, st.chat_messages, st.chat_input, st.session_state, st.markdown, st.info, st.warning, st.error, st.write, st.metric, st.map, st.spinner, st.rerun, st.divider, st.success, st.expander, st.button, st.number_input, st.slider, st.selectbox, st.table, st.map, st.caption
+
+### Requests 
+- https://requests.readthedocs.io/en/latest/
+- requests.get, requests.post
+
+### Pandas
+- https://pandas.pydata.org/docs/
+- pd.DataFrame
+
+### Fastapi
+- https://fastapi.tiangolo.com/tutorial/path-operation-configuration/
+- https://fastapi.tiangolo.com/tutorial/body/
+- https://fastapi.tiangolo.com/tutorial/path-params/
+- https://fastapi.tiangolo.com/tutorial/response-model/
+
+### Uvicorn
+- https://uvicorn.dev/settings/
+
+### BaseModel
+- https://docs.pydantic.dev/latest/api/base_model/
+
+### Python - static method
+- https://docs.python.org/3/library/functions.html#staticmethod
+
+### Github repos
+- https://github.com/kokchun/demo_dockerize_ragbit
+- https://github.com/AIgineerAB/AI_engineering_course/tree/main/21_deploy_rag_azure/ragbit/src/ragbit
+
+
 ## Algorithms and Formulas
 
 ### Haversine Formula
@@ -50,4 +83,4 @@ to calculate the distance in kilometers.
 ---
 
 
-**Last updated:** 2026-02-05
+**Last updated:** 2026-02-11
